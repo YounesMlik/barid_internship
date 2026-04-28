@@ -1,0 +1,14 @@
+[project]
+name = "uv-project"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "polars>=1.40.1",
+]
+
+[dependency-groups]
+dev = [
+    "pyinstaller>=6.20.0",
+]

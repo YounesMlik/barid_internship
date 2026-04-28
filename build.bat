@@ -1,0 +1,1 @@
+uv run pyinstaller --onefile --name generer_rapport_retards main.py
