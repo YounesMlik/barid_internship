@@ -52,7 +52,7 @@ def get_delay_threshold():
 def load_data(path):
     return (
         pl.read_csv(path, skip_lines=3, try_parse_dates=True).head(-1)  # drop last row
-    )
+    ).with_columns(pl.col("date_dernierstatut").dt.cast_time_unit("ms"))
 
 
 def filter_data(df, delay_threshold):
@@ -61,7 +61,7 @@ def filter_data(df, delay_threshold):
         (pl.col("SITE DERNIER STATUT").is_in(our_locations))
         & (~pl.col("DERNIER STATUT").is_in(["liv", "liv_ret"]))
         & (pl.col("DATE DERNIER STATUT") < now - delay_threshold)
-    )
+    ).sort("SITE DERNIER STATUT")
 
 
 def main():
