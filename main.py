@@ -25,17 +25,17 @@ our_locations = [
     "ES-SEMARA CLD",
     "LAAYOUNE PORT",
     "TARFAYA",
-    # "HUB LAAYOUNE CHRONODIALI",  # ask supervisor if these should be included
-    # "LAAYOUNE HAY TAAOUN",
+    "HUB LAAYOUNE CHRONODIALI",
+    "LAAYOUNE HAY TAAOUN",
 ]
 DEFAULT_DELAY = 7  # days
 
-input_file = "smi_suiviexpedition.csv"
-output_file = "rapport_retard.csv"
+DEFAULT_INPUT_PATH = "smi_suiviexpedition.csv"
+DEFAULT_OUTPUT_PATH = "rapport_retard.csv"
 
 
 def get_input_file():
-    path = input("Entrez le chemin du fichier CSV : ").strip()
+    path = DEFAULT_INPUT_PATH
     while not os.path.exists(path):
         path = input("Fichier introuvable. Entrez le chemin du fichier CSV : ").strip()
     return path
@@ -71,7 +71,7 @@ def main():
     data = load_data(input_file)
     result = filter_data(data, delay_threshold)
 
-    result.write_csv(output_file)
+    result.write_csv(DEFAULT_OUTPUT_PATH)
 
 
 if __name__ == "__main__":
