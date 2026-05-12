@@ -6,27 +6,27 @@ from datetime import date
 COLUMN_MAPPING = {
     "code_bordereau": "CAB",
     "nomrais": "CLIENT",
-    "serviceoptionnel": "SERVICES OPTIONNELS",
-    "desburpoexpediteur": "SITE EXPEDITEUR",
-    "reception": "RECEPTION(OK ou NOK)",
-    "dernier_statut": "DERNIER STATUT",
-    "date_dernierstatut": "DATE DERNIER STATUT",
-    "desburpodernierstatut": "SITE DERNIER STATUT",
+    "serviceoptionnel": "SERVICES_OPTIONNELS",
+    "desburpoexpediteur": "SITE_EXPEDITEUR",
+    "reception": "RECEPTION",
+    "dernier_statut": "DERNIER_STATUT",
+    "date_dernierstatut": "DATE_DERNIER_STATUT",
+    "desburpodernierstatut": "SITE_DERNIER_STATUT",
     "destination": "DESTINATION",
 }
 
 our_locations = [
     "AGENCE MESSAGERIE DAKHLA",
     "AGENCE MESSAGERIE LAAYOUNE",
-    "BIRGANDOUZ",
-    "BOUJDOUR",
     "CENTRE COURRIER COLIS LAAYOUNE",
     "DAKHLA CLD",
     "ES-SEMARA CLD",
     "LAAYOUNE PORT",
     "TARFAYA",
     "HUB LAAYOUNE CHRONODIALI",
-    "LAAYOUNE HAY TAAOUN",
+    # "BOUJDOUR",
+    # "BIRGANDOUZ",
+    # "LAAYOUNE HAY TAAOUN",
 ]
 DEFAULT_DELAY = 7  # days
 
@@ -34,8 +34,7 @@ DEFAULT_INPUT_PATH = "smi_suiviexpedition.csv"
 DEFAULT_OUTPUT_PATH = "rapport_retard.xlsx"
 
 
-def get_input_file():
-    path = DEFAULT_INPUT_PATH
+def get_input_file(path=DEFAULT_INPUT_PATH):
     while not os.path.exists(path):
         path = input("Fichier introuvable. Entrez le chemin du fichier CSV : ").strip()
     return path
@@ -57,11 +56,15 @@ def load_data(path):
 
 def filter_data(df, delay_threshold):
     now = date.today()
-    return df.rename(COLUMN_MAPPING).filter(
-        (pl.col("SITE DERNIER STATUT").is_in(our_locations))
-        & (~pl.col("DERNIER STATUT").is_in(["liv", "liv_ret"]))
-        & (pl.col("DATE DERNIER STATUT") < now - delay_threshold)
-    ).sort("SITE DERNIER STATUT")
+    return (
+        df.rename(COLUMN_MAPPING)
+        .filter(
+            (pl.col("SITE_DERNIER_STATUT").is_in(our_locations))
+            & (~pl.col("DERNIER_STATUT").is_in(["liv", "liv_ret"]))
+            & (pl.col("DATE_DERNIER_STATUT") < now - delay_threshold)
+        )
+        .sort("SITE_DERNIER_STATUT")
+    )
 
 
 def main():
