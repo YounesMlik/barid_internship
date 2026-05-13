@@ -1,7 +1,6 @@
 from playwright.sync_api import Page, BrowserContext
 from scraper.core import login
 from pathlib import Path
-import os
 from collections import defaultdict
 from functools import lru_cache
 
@@ -17,8 +16,8 @@ def navigate(page: Page) -> None:
 
 def init_page(context: BrowserContext) -> Page:
     page = context.new_page()
-    # login(page)
-    # navigate(page)
+    login(page)
+    navigate(page)
     return page
 
 
@@ -30,7 +29,7 @@ def task(page: Page, cab: str, download_path: str = DEFAULT_DOWNLOAD_PATH):
     print(f"Downloading {cab}")
 
     page.fill("#txtCodeBor", cab)
-    page.keyboard.press("Enter")  # replace if needed
+    page.keyboard.press("Enter")
     page.locator("#GridBordereau_Lbid_bordereau_0", has_text=cab).wait_for()
 
     ids: list[str] = []
@@ -40,7 +39,6 @@ def task(page: Page, cab: str, download_path: str = DEFAULT_DOWNLOAD_PATH):
             ids.append(cells[0].inner_text().strip())
 
     print(ids)
-    # ids = ids[:1]  # deal with POD later
 
     for i, id in enumerate(ids):
         file_path = Path(download_path) / f"{cab}__{id}__{len(ids)}__{i + 1}.html"
