@@ -1,9 +1,9 @@
 import polars as pl
 from pathlib import Path
-from bs4 import BeautifulSoup, Tag
 from typing import Callable, Iterable, Any
 from dataclasses import dataclass, field as dc_field
 from types import SimpleNamespace
+from lxml import html
 
 
 @dataclass(frozen=True, slots=True)
@@ -21,7 +21,7 @@ class FieldConfig:
     method: str = "value"
 
 
-type Extractor = Callable[[Tag], str | None]
+type Extractor = Callable[[html.HtmlElement], str | None]
 
 OPERATIONS_TABLE = TableConfig(
     table_id="GridViewOperations",
@@ -140,26 +140,24 @@ FIELDS = [
 ]
 
 EXTRACTORS = {
-    "text": lambda e: e.get_text(strip=True),
+    "text": lambda e: e.text_content().strip(),
     "value": lambda e: e.get("value"),
 }
 
 
-def parse_table_rows(table: Tag):
-    return [
-        [cell.get_text(strip=True) for cell in row.find_all(["th", "td"])]
-        for row in table.find_all("tr")
-    ]
+def parse_table_rows(table: html.HtmlElement):
+    tbody = table[0]
+    return [[cell.text_content().strip() for cell in row] for row in tbody]
 
 
 def extract_table(
-    soup: BeautifulSoup,
+    tree: html.HtmlElement,
     config: TableConfig,
     additional_cols: dict[str, Any] = {},
 ) -> pl.DataFrame:
     additional_cols_list = [pl.lit(v).alias(k) for k, v in additional_cols.items()]
 
-    table = soup.find("table", id=config.table_id)
+    table = tree.get_element_by_id(config.table_id, None)
 
     if table is None:
         rows = []
@@ -184,22 +182,20 @@ def extract_table(
 
 
 def extract_fields(
-    soup: BeautifulSoup,
+    tree: html.HtmlElement,
     fields: list[FieldConfig] = FIELDS,
     extractors: dict[str, Extractor] = EXTRACTORS,
 ):
     elements_by_id = {
-        elem.get("id"): elem
-        for elem in soup.find_all(id=True)
+        elem.attrib["id"]: elem for elem in tree.iter() if "id" in elem.attrib
     }
-    
+
     data: dict[str, str] = {}
 
     for field in fields:
-        # elem = soup.select_one(f"#{field.id}")
-        # elem = soup.find(id=field.id)
+        # elem = tree.get_element_by_id(field.id, None)
         elem = elements_by_id.get(field.id)
-        
+
         method = field.method
         extractor = extractors[method]
 
@@ -229,27 +225,27 @@ def extract_fields(
     return df
 
 
-def extract_page(html: str):
-    soup = BeautifulSoup(html, "lxml")
-    fields = extract_fields(soup)
+def extract_page(html_text: str):
+    tree = html.fromstring(html_text)
+    fields = extract_fields(tree)
     cab = fields["Cab"][0]
     id = fields["Id"][0]
     tables = {
-        k: extract_table(soup, config, additional_cols={"cab": cab, "id": id})
+        k: extract_table(tree, config, additional_cols={"cab": cab, "id": id})
         for k, config in vars(TABLES).items()
     }
     return {"fields": fields, **tables}
 
 
-def extract_pages(htmls: Iterable[str]):
+def extract_pages(html_texts: Iterable[str]):
     tables_list: dict[str, list[pl.DataFrame]] = {
         "fields": [],
         "operations": [],
         "services": [],
         "delivery": [],
     }
-    for html in htmls:
-        page_data = extract_page(html)
+    for html_text in html_texts:
+        page_data = extract_page(html_text)
         for key in tables_list:
             tables_list[key].append(page_data[key])
 
