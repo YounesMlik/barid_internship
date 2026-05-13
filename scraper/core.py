@@ -2,9 +2,10 @@ from playwright.sync_api import sync_playwright, Page, BrowserContext
 from datetime import date, timedelta
 from typing import Callable, Any, Iterable
 
-
 LOGIN_URL = "http://appsmi02.barid.ma/APGPM/default.aspx"
 MAX_ATTEMPTS = 100
+
+type OnError = Callable[[int, Exception], None]
 
 
 def login(page: Page) -> None:
@@ -26,8 +27,8 @@ def default_on_error(attempt: int, e: Exception):
 
 def with_retry(
     fn: Callable[..., Any],
-    on_error: Callable[[int, Exception], None] = default_on_error,
-    max_attempts: int = MAX_ATTEMPTS,
+    on_error: OnError,
+    max_attempts: int,
 ):
     def wrapper(*args: Any, **kwargs: Any):
         last_exc = None
@@ -47,8 +48,8 @@ def retry_with_resource(
     acquire: Callable[[], Any],
     action: Callable[[Any], None],
     release: Callable[[Any], None],
-    on_error: Callable[[int, Exception], None] = default_on_error,
-    max_attempts: int = MAX_ATTEMPTS,
+    on_error: OnError,
+    max_attempts: int,
 ):
     for attempt in range(max_attempts):
         try:
@@ -66,14 +67,20 @@ def run_workflow(
     task: Callable[[Page, Any], None],
     items: Iterable[Any],
     headless: bool = True,
-    timeout: int = 10_000,
+    timeout: int = 10_000,  # in ms
+    max_attempts: int = MAX_ATTEMPTS,
     stateless: bool = False,
+    on_error: OnError = default_on_error,
 ):
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=headless)
         context = browser.new_context()
-        context.set_default_timeout(timeout)  # in ms
-        acquire = with_retry(init_page)
+        context.set_default_timeout(timeout)
+        acquire = with_retry(
+            init_page,
+            max_attempts=max_attempts,
+            on_error=on_error,
+        )
         page = acquire(context)
         for item in items:
             if stateless:
@@ -85,5 +92,7 @@ def run_workflow(
                 acquire=lambda: acquire(context),
                 action=lambda p: task(p, item),
                 release=lambda p: p.close(),
+                max_attempts=max_attempts,
+                on_error=on_error,
             )
         browser.close()

@@ -34,5 +34,19 @@ def run_historique():
     )
 
 
+# def run_historique_offline():
+#     cab_list = (
+#         lib.read_smi_suiviexpedition_many()
+#         .sort("DATE_DERNIER_STATUT", descending=True)["CAB"]
+#         .to_list()[:1]
+#     )
+#     run_workflow(
+#         historique.offline_init_page,
+#         historique.offline_task,
+#         cab_list,
+#         headless=False,
+#     )
+
+
 if __name__ == "__main__":
     run_historique()

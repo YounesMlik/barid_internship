@@ -1,30 +1,9 @@
 from playwright.sync_api import Page, BrowserContext
 from scraper.core import login
 from pathlib import Path
-
-FEILDS = [
-    {"name": "Cab", "id": "CodeBordereau"},
-    {"name": "Date depot", "id": "date_op"},
-    {"name": "Type cab", "id": "Type_bordereau"},
-    {"name": "Dernier statut", "id": "Dernier_staut"},
-    {"name": "Régime", "id": "regime"},
-    {"name": "Contrat", "id": "contrat"},
-    {"name": "Id", "id": "IdBordereau"},
-    {"name": "Etat", "id": "heure_op"},
-    {"name": "Poids global(en KG)", "id": "Poids_global"},
-    {"name": "Centre/Agence depot", "id": "entite_dep"},
-    {"name": "Destination", "id": "destination"},
-    {"name": "Client", "id": "client"},
-    {"name": "Produit/Niveau Service", "id": "txtlibproduit"},
-    {"name": "Mode paiement", "id": "txtmodepaiement"},
-    {"name": "Taxe DTQ ?(Dhs)", "id": "txttxdtq"},
-    {"name": "Canal  de livraison 1", "id": "txtmodlivrai"},
-    {"name": "Canal  de livraison 2", "id": "txtlibsitealivr"},
-    {"name": "Longueur", "id": "txtLongueur"},
-    {"name": "Hauteur", "id": "txtHauteur"},
-    {"name": "Largeur", "id": "txtLargeur"},
-    {"name": "Poids Volumétrique", "id": "txtPoidsVolume"},
-]
+import os
+from collections import defaultdict
+from functools import lru_cache
 
 DEFAULT_DOWNLOAD_PATH = "data/cab"
 
@@ -38,8 +17,8 @@ def navigate(page: Page) -> None:
 
 def init_page(context: BrowserContext) -> Page:
     page = context.new_page()
-    login(page)
-    navigate(page)
+    # login(page)
+    # navigate(page)
     return page
 
 
@@ -76,36 +55,44 @@ def task(page: Page, cab: str, download_path: str = DEFAULT_DOWNLOAD_PATH):
         with file_path.open("w", encoding="utf-8") as file:
             file.write(page.content())
 
-        # data: dict[str, str] = {}
-        # for field in FEILDS:
-        #     datum: str = page.locator(f"#{field['id']}").input_value()      # just do it on local html
-        #     data[field["name"]] = datum
-        # print(data)
-
         page.click("#btnretour")  # back
 
-    page.click("#Button1")  # reset
+    page.click("#Button1")  # reset=
+
+@lru_cache(maxsize=1)
+def build_download_index(download_path: str):
+    """
+    Returns:
+        dict[cab] -> {
+            "max_total": int,
+            "indices": set[int],
+        }
+    """
+    index = defaultdict(lambda: {"max_total": 0, "indices": set()})
+
+    for file in Path(download_path).iterdir():
+        if file.suffix != ".html":
+            continue
+        if file.name.count("__") != 3:
+            continue
+        
+        cab, *_rest, total_str, idx_str = file.stem.split("__")
+
+        total = int(total_str)
+        idx = int(idx_str)
+
+        entry = index[cab]
+        entry["max_total"] = max(entry["max_total"], total)
+        entry["indices"].add(idx)
+
+    return index
 
 
-def all_downloads_exist(
-    cab: str,
-    # id_col: int,
-    # total_col: int,
-    # index_col: int,
-    # seperator: str = "__",
-    download_path: str = DEFAULT_DOWNLOAD_PATH,
-) -> bool:
-    files = list(Path(download_path).glob(f"{cab}__*__*__*.html"))
-
-    if not files:
+def all_downloads_exist(cab: str, download_path: str = DEFAULT_DOWNLOAD_PATH) -> bool:
+    index = build_download_index(download_path)
+    entry = index.get(cab)
+    if not entry or entry["max_total"] == 0:
         return False
 
-    parsed_names = [file.stem.split("__") for file in files]
-
-    total_expected = max(int(parts[2]) for parts in parsed_names)
-
-    downloaded_indices = {int(parts[3]) for parts in parsed_names}
-
-    expected_indices = set(range(1, total_expected + 1))
-
-    return downloaded_indices == expected_indices
+    expected = set(range(1, entry["max_total"] + 1))
+    return entry["indices"] == expected
