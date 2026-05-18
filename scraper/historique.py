@@ -3,6 +3,7 @@ from scraper.core import login
 from pathlib import Path
 from collections import defaultdict
 from functools import lru_cache
+from dataclasses import dataclass, field
 
 DEFAULT_DOWNLOAD_PATH = "data/cab"
 
@@ -57,6 +58,13 @@ def task(page: Page, cab: str, download_path: str = DEFAULT_DOWNLOAD_PATH):
 
     page.click("#Button1")  # reset=
 
+
+@dataclass
+class Entry:
+    max_total: int = 0
+    indices: set[int] = field(default_factory=set[int])
+
+
 @lru_cache(maxsize=1)
 def build_download_index(download_path: str):
     """
@@ -66,22 +74,22 @@ def build_download_index(download_path: str):
             "indices": set[int],
         }
     """
-    index = defaultdict(lambda: {"max_total": 0, "indices": set()})
+    index: defaultdict[str, Entry] = defaultdict(Entry)
 
     for file in Path(download_path).iterdir():
         if file.suffix != ".html":
             continue
         if file.name.count("__") != 3:
             continue
-        
+
         cab, *_rest, total_str, idx_str = file.stem.split("__")
 
         total = int(total_str)
         idx = int(idx_str)
 
         entry = index[cab]
-        entry["max_total"] = max(entry["max_total"], total)
-        entry["indices"].add(idx)
+        entry.max_total = max(entry.max_total, total)
+        entry.indices.add(idx)
 
     return index
 
@@ -89,8 +97,8 @@ def build_download_index(download_path: str):
 def all_downloads_exist(cab: str, download_path: str = DEFAULT_DOWNLOAD_PATH) -> bool:
     index = build_download_index(download_path)
     entry = index.get(cab)
-    if not entry or entry["max_total"] == 0:
+    if not entry or entry.max_total == 0:
         return False
 
-    expected = set(range(1, entry["max_total"] + 1))
-    return entry["indices"] == expected
+    expected = set(range(1, entry.max_total + 1))
+    return entry.indices == expected

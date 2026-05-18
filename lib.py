@@ -3,7 +3,7 @@ from pathlib import Path
 from datetime import date
 from io import StringIO
 import main
-from typing import Callable, Literal
+from typing import Callable, Literal, Any
 
 smi_suiviexpedition_PATH = "data/smi_suiviexpedition"
 
@@ -23,7 +23,7 @@ def read_smi_envoisbyproduitintern_many(
     path: str | Path = smi_envoisbyproduitintern_PATH,
 ) -> pl.DataFrame:
     folder = Path(path)
-    raw_dfs = []
+    raw_dfs: list[pl.DataFrame] = []
     for file in folder.iterdir():
         raw_df = read_smi_envoisbyproduitintern(file)
         raw_dfs.append(raw_df)
@@ -51,7 +51,7 @@ def read_smi_suiviexpedition_many(
     path: str | Path = smi_suiviexpedition_PATH,
 ) -> pl.DataFrame:
     folder = Path(path)
-    raw_dfs = []
+    raw_dfs: list[pl.DataFrame] = []
     for file in folder.iterdir():
         raw_df = read_smi_suiviexpedition(file)
         raw_dfs.append(raw_df)
@@ -79,8 +79,8 @@ def read_smi_situa_journa_distrib4_many(
     path: str | Path = smi_situa_journa_distrib4_PATH,
 ) -> tuple[pl.DataFrame, pl.DataFrame]:
     folder = Path(path)
-    current_dfs = []
-    d_one_dfs = []
+    current_dfs: list[pl.DataFrame] = []
+    d_one_dfs: list[pl.DataFrame] = []
     for file in folder.iterdir():
         ds = date.fromisoformat(file.stem)
         current_df, d_one_df = read_smi_situa_journa_distrib4(file)
@@ -88,11 +88,12 @@ def read_smi_situa_journa_distrib4_many(
         d_one_df = d_one_df.select(pl.lit(ds).alias("ds"), pl.all())
         current_dfs.append(current_df)
         d_one_dfs.append(d_one_df)
-    current_dfs = pl.concat(current_dfs)
-    d_one_dfs = pl.concat(d_one_dfs)
+        
+    current_df = pl.concat(current_dfs)
+    d_one_df = pl.concat(d_one_dfs)
 
     # print()
-    return current_dfs, d_one_dfs
+    return current_df, d_one_df
 
 
 def complete_grid(
@@ -100,7 +101,7 @@ def complete_grid(
     *,
     dimensions: dict[str, pl.Series | Callable[[pl.DataFrame], pl.Series]],
     on: list[str] | None = None,
-    fill_value=None,
+    fill_value: Any = None,
 ) -> pl.DataFrame:
 
     grids: list[pl.DataFrame] = []
@@ -132,7 +133,7 @@ def complete_time_grid(
     time_col: str,
     freq: str,
     time_unit: Literal["ns", "us", "ms"] | None,
-    fill_value=None,
+    fill_value: Any = None,
 ) -> pl.DataFrame:
 
     return complete_grid(
