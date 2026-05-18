@@ -1,7 +1,7 @@
 import os
 import polars as pl
 from datetime import date
-
+from pathlib import Path
 
 COLUMN_MAPPING = {
     "code_bordereau": "CAB",
@@ -34,7 +34,7 @@ DEFAULT_INPUT_PATH = "smi_suiviexpedition.csv"
 DEFAULT_OUTPUT_PATH = "rapport_retard.xlsx"
 
 
-def get_input_file(path=DEFAULT_INPUT_PATH):
+def get_input_file(path: str = DEFAULT_INPUT_PATH):
     while not os.path.exists(path):
         path = input("Fichier introuvable. Entrez le chemin du fichier CSV : ").strip()
     return path
@@ -48,13 +48,13 @@ def get_delay_threshold():
     return pl.duration(days=days)
 
 
-def load_data(path):
+def load_data(path: str | Path):
     return (
         pl.read_csv(path, skip_lines=3, try_parse_dates=True).head(-1)  # drop last row
     ).with_columns(pl.col("date_dernierstatut").dt.cast_time_unit("ms"))
 
 
-def filter_data(df, delay_threshold):
+def filter_data(df: pl.DataFrame, delay_threshold):
     now = date.today()
     return (
         df.rename(COLUMN_MAPPING)

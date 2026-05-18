@@ -9,10 +9,31 @@ smi_suiviexpedition_PATH = "data/smi_suiviexpedition"
 
 smi_situa_journa_distrib4_PATH = "data/smi_situa_journa_distrib4"
 
+smi_envoisbyproduitintern_PATH = "data/smi_envoisbyproduitintern"
 
-def read_smi_suiviexpedition(
-    path: str | Path,
+
+def read_smi_envoisbyproduitintern(path: str | Path) -> pl.DataFrame:
+    data = pl.read_csv(path, try_parse_dates=True).filter(
+        pl.all_horizontal(pl.all().is_null()).not_()
+    )
+    return data
+
+
+def read_smi_envoisbyproduitintern_many(
+    path: str | Path = smi_envoisbyproduitintern_PATH,
 ) -> pl.DataFrame:
+    folder = Path(path)
+    raw_dfs = []
+    for file in folder.iterdir():
+        raw_df = read_smi_envoisbyproduitintern(file)
+        raw_dfs.append(raw_df)
+    data: pl.DataFrame = pl.concat(raw_dfs)
+    data = data.unique("codeenvoi_")
+    data = data.sort("datedepot")
+    return data
+
+
+def read_smi_suiviexpedition(path: str | Path) -> pl.DataFrame:
     data = (
         pl.read_csv(path, skip_lines=3, try_parse_dates=True)
         .head(-1)
@@ -119,8 +140,8 @@ def complete_time_grid(
         dimensions={
             id_col: df[id_col].unique(),
             time_col: pl.datetime_range(
-                start=df[time_col].min(), # pyright: ignore[reportArgumentType]
-                end=df[time_col].max(), # pyright: ignore[reportArgumentType]
+                start=df[time_col].min(),  # pyright: ignore[reportArgumentType]
+                end=df[time_col].max(),  # pyright: ignore[reportArgumentType]
                 interval=freq,
                 eager=True,
                 time_unit=time_unit,

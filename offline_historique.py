@@ -1,17 +1,18 @@
 import polars as pl
 from pathlib import Path
-from typing import Callable, Iterable, Any
+from typing import Callable, Iterable
 from itertools import chain
 from dataclasses import dataclass, field as dc_field
 from types import SimpleNamespace
 from lxml import html
+from tqdm import tqdm
 
 
 @dataclass(frozen=True, slots=True)
 class TableConfig:
     table_id: str
     schema: pl.Schema
-    renames: dict[str, str] = dc_field(default_factory=dict)
+    renames: dict[str, str] = dc_field(default_factory=dict[str, str])
     transforms: Iterable[pl.Expr] = ()
 
 
@@ -300,7 +301,12 @@ def parse_historique_from_folder(
         return existing_dfs
 
     extracted_dfs: dict[str, pl.DataFrame] = extract_pages(
-        (file.read_text() for file in input_files)
+        tqdm(
+            (file.read_text() for file in input_files),
+            total=len(input_files),
+            desc="Parsing files",
+            mininterval=0.2,
+        )
     )
 
     dfs = {
