@@ -5,13 +5,14 @@ from itertools import chain
 from dataclasses import dataclass, field as dc_field
 from types import SimpleNamespace
 from lxml import html
+from tqdm import tqdm
 
 
 @dataclass(frozen=True, slots=True)
 class TableConfig:
     table_id: str
     schema: pl.Schema
-    renames: dict[str, str] = dc_field(default_factory=dict)
+    renames: dict[str, str] = dc_field(default_factory=dict[str, str])
     transforms: Iterable[pl.Expr] = ()
 
 
@@ -24,7 +25,7 @@ class FieldConfig:
 
 type Extractor = Callable[[html.HtmlElement], str | None]
 
-OPERATIONS_TABLE = TableConfig(
+OPERATIONS_TABLE_CONFIG = TableConfig(
     table_id="GridViewOperations",
     schema=pl.Schema(
         [
@@ -55,7 +56,7 @@ OPERATIONS_TABLE = TableConfig(
     ],
 )
 
-SERVICES_TABLE = TableConfig(
+SERVICES_TABLE_CONFIG = TableConfig(
     table_id="GDVService",
     schema=pl.Schema(
         [
@@ -80,7 +81,7 @@ SERVICES_TABLE = TableConfig(
     ],
 )
 
-DELIVERY_TABLE = TableConfig(
+DELIVERY_TABLE_CONFIG = TableConfig(
     table_id="GDVinfoliv",
     schema=pl.Schema(
         [
@@ -110,10 +111,10 @@ DELIVERY_TABLE = TableConfig(
     ],
 )
 
-TABLES = SimpleNamespace(
-    operations=OPERATIONS_TABLE,
-    services=SERVICES_TABLE,
-    delivery=DELIVERY_TABLE,
+TABLE_CONFIGS = SimpleNamespace(
+    operations=OPERATIONS_TABLE_CONFIG,
+    services=SERVICES_TABLE_CONFIG,
+    delivery=DELIVERY_TABLE_CONFIG,
 )
 
 FIELDS = [
@@ -152,13 +153,13 @@ FIELDS_TRANSFORMS = [
     pl.col("Taxe_DTQ_Dhs").cast(pl.Float64, strict=False),
 ]
 
-EXTRACTORS = {
+EXTRACTORS: dict[str, Extractor] = {
     "text": lambda e: e.text_content().strip(),
     "value": lambda e: e.get("value"),
 }
 
 
-def fix_length(arr: list, length: int, fill=""):
+def fix_length(arr: list[Any], length: int, fill: Any):
     if len(arr) > length:
         del arr[length:]
     elif len(arr) < length:
@@ -175,8 +176,8 @@ def parse_table_rows(table: html.HtmlElement) -> list[list[str]]:
 def extract_table(
     tree: html.HtmlElement,
     config: TableConfig,
-    cab,
-    id,
+    cab: str,
+    id: str,
 ) -> list[list[str]]:
 
     table = tree.get_element_by_id(config.table_id, None)
@@ -186,7 +187,7 @@ def extract_table(
     else:
         rows = parse_table_rows(table)
 
-    data_rows = rows[1:]
+    data_rows: list[list[str]] = rows[1:]
 
     data_rows = [fix_length(row, config.schema.len(), "") for row in data_rows]
     data_rows = [[cab, id, *row] for row in data_rows]
@@ -199,7 +200,7 @@ def extract_fields(
     fields: list[FieldConfig] = FIELDS,
     extractors: dict[str, Extractor] = EXTRACTORS,
 ) -> dict[str, str]:
-    elements_by_id = {
+    elements_by_id: dict[str, html.HtmlElement] = {
         elem.attrib["id"]: elem for elem in tree.iter() if "id" in elem.attrib
     }
 
@@ -225,18 +226,22 @@ def extract_fields(
     return data_dict
 
 
-def extract_page(html_text: str):
-    tree = html.fromstring(html_text)
+def extract_page(html_text: str) -> dict[str, dict[str, str] | list[list[str]]]:
+    tree = html.fromstring(html_text)  # pyright: ignore[reportUnknownMemberType]
     fields = extract_fields(tree)
     cab = fields["Cab"]
     id = fields["Id"]
     tables = {
-        k: extract_table(tree, config, cab, id) for k, config in vars(TABLES).items()
+        k: extract_table(tree, config, cab, id)
+        for k, config in vars(TABLE_CONFIGS).items()
     }
     return {"fields": fields, **tables}
 
 
-def extract_pages(html_texts: Iterable[str]):  # make sure html_texts isn't empty
+def extract_pages(html_texts: Iterable[str]) -> dict[str, pl.DataFrame]:
+    if not html_texts:
+        raise ValueError("html_texts cannot be empty")
+
     fields_list: list[dict[str, str]] = []
 
     tables_list: dict[str, list[list[str]]] = {
@@ -247,29 +252,29 @@ def extract_pages(html_texts: Iterable[str]):  # make sure html_texts isn't empt
     for html_text in html_texts:
         page_data = extract_page(html_text)
 
-        fields_list.append(page_data["fields"])
+        fields_list.append(page_data["fields"]) # pyright: ignore[reportArgumentType]
 
         for key in tables_list:
-            tables_list[key].append(page_data[key])
+            tables_list[key].append(page_data[key]) # pyright: ignore[reportArgumentType]
 
     return {
         "fields": pl.DataFrame(fields_list).with_columns(FIELDS_TRANSFORMS),
         **{
             key: (
                 pl.DataFrame(
-                    chain(*table),
+                    chain.from_iterable(table),
                     orient="row",
-                    schema=["cab", "id", *getattr(TABLES, key).schema],
+                    schema=["cab", "id", *getattr(TABLE_CONFIGS, key).schema],
                 )
-                .rename(getattr(TABLES, key).renames)
-                .with_columns(getattr(TABLES, key).transforms)
+                .rename(getattr(TABLE_CONFIGS, key).renames)
+                .with_columns(getattr(TABLE_CONFIGS, key).transforms)
             )
             for key, table in tables_list.items()
         },
     }
 
 
-def extract_pages_from_folder(folder_path: str | Path):
+def extract_pages_from_folder(folder_path: str | Path) -> dict[str, pl.DataFrame]:
     files = Path(folder_path).iterdir()
     return extract_pages((file.read_text() for file in files))
 
@@ -278,7 +283,7 @@ def parse_historique_from_folder(
     input_folder_path: str,
     output_folder_path: str,
     save_output: bool = True,
-):
+) -> dict[str, pl.DataFrame]:
     input_folder = Path(input_folder_path)
     output_folder = Path(output_folder_path)
 
@@ -286,9 +291,9 @@ def parse_historique_from_folder(
         file.stem: pl.read_parquet(file) for file in output_folder.iterdir()
     }
     if "fields" not in existing_dfs:
-        cabs = set()
+        cabs = set[str]()
     else:
-        cabs = set(existing_dfs["fields"]["Cab"])
+        cabs = set[str](existing_dfs["fields"]["Cab"])
 
     input_files = sorted(list(input_folder.iterdir()))
 
@@ -300,7 +305,12 @@ def parse_historique_from_folder(
         return existing_dfs
 
     extracted_dfs: dict[str, pl.DataFrame] = extract_pages(
-        (file.read_text() for file in input_files)
+        tqdm(
+            (file.read_text() for file in input_files),
+            total=len(input_files),
+            desc="Parsing files",
+            mininterval=0.2,
+        )
     )
 
     dfs = {

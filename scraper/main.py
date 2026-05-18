@@ -22,8 +22,8 @@ def run_etats():
 
 def run_historique():
     cab_list = (
-        lib.read_smi_suiviexpedition_many()
-        .sort("DATE_DERNIER_STATUT", descending=True)["CAB"]
+        lib.read_smi_envoisbyproduitintern_many()
+        .sort("datedepot", descending=True)["codeenvoi_"]
         .to_list()
     )
     run_workflow(
