@@ -3,7 +3,7 @@ from pathlib import Path
 from datetime import date
 from io import StringIO
 import main
-from typing import Callable
+from typing import Callable, Literal
 
 smi_suiviexpedition_PATH = "data/smi_suiviexpedition"
 
@@ -11,7 +11,7 @@ smi_situa_journa_distrib4_PATH = "data/smi_situa_journa_distrib4"
 
 
 def read_smi_suiviexpedition(
-    path: str,
+    path: str | Path,
 ) -> pl.DataFrame:
     data = (
         pl.read_csv(path, skip_lines=3, try_parse_dates=True)
@@ -27,7 +27,7 @@ def read_smi_suiviexpedition(
 
 
 def read_smi_suiviexpedition_many(
-    path: str = smi_suiviexpedition_PATH,
+    path: str | Path = smi_suiviexpedition_PATH,
 ) -> pl.DataFrame:
     folder = Path(path)
     raw_dfs = []
@@ -40,7 +40,9 @@ def read_smi_suiviexpedition_many(
     return data
 
 
-def read_smi_situa_journa_distrib4(path: str) -> tuple[pl.DataFrame, pl.DataFrame]:
+def read_smi_situa_journa_distrib4(
+    path: str | Path,
+) -> tuple[pl.DataFrame, pl.DataFrame]:
     with open(path) as f:
         parts = f.read().strip().split("\n\n")
 
@@ -49,11 +51,11 @@ def read_smi_situa_journa_distrib4(path: str) -> tuple[pl.DataFrame, pl.DataFram
     current_df = current_df.rename({current_df.columns[0]: "unique_id"})
     d_one_df = d_one_df.rename({d_one_df.columns[0]: "unique_id"})
 
-    return [current_df, d_one_df]
+    return current_df, d_one_df
 
 
 def read_smi_situa_journa_distrib4_many(
-    path: str = smi_situa_journa_distrib4_PATH,
+    path: str | Path = smi_situa_journa_distrib4_PATH,
 ) -> tuple[pl.DataFrame, pl.DataFrame]:
     folder = Path(path)
     current_dfs = []
@@ -108,7 +110,7 @@ def complete_time_grid(
     id_col: str,
     time_col: str,
     freq: str,
-    time_unit: str = "us",
+    time_unit: Literal["ns", "us", "ms"] | None,
     fill_value=None,
 ) -> pl.DataFrame:
 
@@ -117,12 +119,12 @@ def complete_time_grid(
         dimensions={
             id_col: df[id_col].unique(),
             time_col: pl.datetime_range(
-                start=df[time_col].min(),
-                end=df[time_col].max(),
+                start=df[time_col].min(), # pyright: ignore[reportArgumentType]
+                end=df[time_col].max(), # pyright: ignore[reportArgumentType]
                 interval=freq,
                 eager=True,
                 time_unit=time_unit,
-            ),
+            ),  # type: ignore
         },
         fill_value=fill_value,
     )
