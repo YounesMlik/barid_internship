@@ -25,7 +25,10 @@ def init_page(context: BrowserContext) -> Page:
 def task(page: Page, cab: str, download_path: str = DEFAULT_DOWNLOAD_PATH):
     existing = all_downloads_exist(cab, download_path=download_path)
     if existing:
-        print(f"Skipping {cab} (already downloaded)")
+        # print(f"Skipping {cab} (already downloaded)")
+        return
+    if any(string in cab for string in ["/", "\\"]):
+        print(f"Skipping {cab} (bad cab name)")
         return
     print(f"Downloading {cab}")
 
@@ -45,9 +48,9 @@ def task(page: Page, cab: str, download_path: str = DEFAULT_DOWNLOAD_PATH):
         file_path = Path(download_path) / f"{cab}__{id}__{len(ids)}__{i + 1}.html"
         if file_path.exists():
             print(f"Skipping {id} (already downloaded)")
-            continue
+            continue 
+        print(f"Downloading {cab} {id}")
 
-        print(id)
         page.click(f"#GridBordereau_LinkDetail_{i}")
         page.locator(f"#IdBordereau[value='{id}']").wait_for()
 
