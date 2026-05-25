@@ -134,6 +134,7 @@ dependencies = [
     { name = "coreforecast" },
     { name = "fpppy" },
     { name = "hierarchicalforecast" },
+    { name = "hijridate" },
     { name = "html5lib" },
     { name = "ipykernel" },
     { name = "isort" },
@@ -167,6 +168,7 @@ requires-dist = [
     { name = "coreforecast", specifier = ">=0.0.17" },
     { name = "fpppy", specifier = ">=0.0.3" },
     { name = "hierarchicalforecast", specifier = ">=1.5.1" },
+    { name = "hijridate", specifier = ">=2.6.0" },
     { name = "html5lib", specifier = ">=1.1" },
     { name = "ipykernel", specifier = ">=7.2.0" },
     { name = "isort", specifier = ">=8.0.1" },
@@ -765,6 +767,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/ca/6b/1ce4ea6e202f3d566e6b289f83434e9e58a6a595638949c0499078c88388/hierarchicalforecast-1.5.1-cp314-cp314-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:1ac0f25038e35a817e347bf178ac8b9af9cb300a98fde86bb550c4652a53543b", size = 300394, upload-time = "2026-03-04T16:44:10.725Z" },
     { url = "https://files.pythonhosted.org/packages/17/a7/a91c6d258792ea0e4d85058142e60c6ee43e31943b23dff28aeead6455a6/hierarchicalforecast-1.5.1-cp314-cp314-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:8ca278906f0f3144bfdba455b31c2f6ac54a85207f0e22188c6b78c83258c465", size = 306992, upload-time = "2026-03-04T16:44:12.521Z" },
     { url = "https://files.pythonhosted.org/packages/b7/5a/e0bfd84ecea8012b322fbe8acc8010c2974454c93fcd1bb280143ce7307f/hierarchicalforecast-1.5.1-cp314-cp314-win_amd64.whl", hash = "sha256:fe6dfa6a0915d45a4a8503174ceec90f04ffbfdcf3a2e7895041c60cd3b781e2", size = 146402, upload-time = "2026-03-04T16:44:13.826Z" },
+]
+
+[[package]]
+name = "hijridate"
+version = "2.6.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/0e/8a/ddbaee418c78d067832e6d684e52640e19aa04d81d8eee42870b98728205/hijridate-2.6.0.tar.gz", hash = "sha256:afe4644c4d1fe3cfd2aa3c28bfa660405c12e5ba53249ba942ec68c7bb216e00", size = 35791, upload-time = "2026-01-06T19:10:51.073Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/87/8f/189391314015883f2a1a308d5692fc269ea0675dfcd61fa12be4024b2080/hijridate-2.6.0-py3-none-any.whl", hash = "sha256:290db60c7780acc2a7e2112fada70847e3c11c0030b998606db77ecf126c305b", size = 14456, upload-time = "2026-01-06T19:10:49.77Z" },
 ]
 
 [[package]]

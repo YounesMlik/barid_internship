@@ -1,100 +1,7 @@
 import polars as pl
-from pathlib import Path
 from datetime import date
-from io import StringIO
-import main
 from typing import Callable, Literal, Any
-
-smi_suiviexpedition_PATH = "data/smi_suiviexpedition"
-
-smi_situa_journa_distrib4_PATH = "data/smi_situa_journa_distrib4"
-
-smi_envoisbyproduitintern_PATH = "data/smi_envoisbyproduitintern"
-
-
-def read_smi_envoisbyproduitintern(path: str | Path) -> pl.DataFrame:
-    data = pl.read_csv(path, try_parse_dates=True).filter(
-        pl.all_horizontal(pl.all().is_null()).not_()
-    )
-    return data
-
-
-def read_smi_envoisbyproduitintern_many(
-    path: str | Path = smi_envoisbyproduitintern_PATH,
-) -> pl.DataFrame:
-    folder = Path(path)
-    raw_dfs: list[pl.DataFrame] = []
-    for file in folder.iterdir():
-        raw_df = read_smi_envoisbyproduitintern(file)
-        raw_dfs.append(raw_df)
-    data: pl.DataFrame = pl.concat(raw_dfs)
-    data = data.unique("codeenvoi_")
-    data = data.sort("datedepot")
-    return data
-
-
-def read_smi_suiviexpedition(path: str | Path) -> pl.DataFrame:
-    data = (
-        pl.read_csv(path, skip_lines=3, try_parse_dates=True)
-        .head(-1)
-        .with_columns(pl.col("date_dernierstatut"))
-        .rename(main.COLUMN_MAPPING)
-        .filter((pl.col("SITE_DERNIER_STATUT").is_in(main.our_locations)))
-        .unique("CAB")
-        .sort("DATE_DERNIER_STATUT")
-        .with_columns(pl.col("CAB").str.strip_chars())
-    )
-    return data
-
-
-def read_smi_suiviexpedition_many(
-    path: str | Path = smi_suiviexpedition_PATH,
-) -> pl.DataFrame:
-    folder = Path(path)
-    raw_dfs: list[pl.DataFrame] = []
-    for file in folder.iterdir():
-        raw_df = read_smi_suiviexpedition(file)
-        raw_dfs.append(raw_df)
-    data: pl.DataFrame = pl.concat(raw_dfs)
-    data = data.unique("CAB")
-    data = data.sort("DATE_DERNIER_STATUT")
-    return data
-
-
-def read_smi_situa_journa_distrib4(
-    path: str | Path,
-) -> tuple[pl.DataFrame, pl.DataFrame]:
-    with open(path) as f:
-        parts = f.read().strip().split("\n\n")
-
-    current_df = pl.read_csv(StringIO(parts[0]))
-    d_one_df = pl.read_csv(StringIO(parts[1]))
-    current_df = current_df.rename({current_df.columns[0]: "unique_id"})
-    d_one_df = d_one_df.rename({d_one_df.columns[0]: "unique_id"})
-
-    return current_df, d_one_df
-
-
-def read_smi_situa_journa_distrib4_many(
-    path: str | Path = smi_situa_journa_distrib4_PATH,
-) -> tuple[pl.DataFrame, pl.DataFrame]:
-    folder = Path(path)
-    current_dfs: list[pl.DataFrame] = []
-    d_one_dfs: list[pl.DataFrame] = []
-    for file in folder.iterdir():
-        ds = date.fromisoformat(file.stem)
-        current_df, d_one_df = read_smi_situa_journa_distrib4(file)
-        current_df = current_df.select(pl.lit(ds).alias("ds"), pl.all())
-        d_one_df = d_one_df.select(pl.lit(ds).alias("ds"), pl.all())
-        current_dfs.append(current_df)
-        d_one_dfs.append(d_one_df)
-        
-    current_df = pl.concat(current_dfs)
-    d_one_df = pl.concat(d_one_dfs)
-
-    # print()
-    return current_df, d_one_df
-
+from hijridate import Gregorian
 
 def complete_grid(
     df: pl.DataFrame,
@@ -129,24 +36,95 @@ def complete_grid(
 
 def complete_time_grid(
     df: pl.DataFrame,
-    id_col: str,
+    id_col: str | None,
     time_col: str,
     freq: str,
-    time_unit: Literal["ns", "us", "ms"] | None,
+    time_unit: Literal["ns", "us", "ms"] | None = None,
     fill_value: Any = None,
 ) -> pl.DataFrame:
+    time_range = pl.datetime_range(
+        start=df[time_col].min(),  # pyright: ignore[reportArgumentType]
+        end=df[time_col].max(),  # pyright: ignore[reportArgumentType]
+        interval=freq,
+        eager=True,
+        time_unit=time_unit,
+    )  # type: ignore
+
+    dimensions = {time_col: time_range}
+
+    if id_col is not None:
+        dimensions[id_col] = df[id_col].unique()
 
     return complete_grid(
         df,
-        dimensions={
-            id_col: df[id_col].unique(),
-            time_col: pl.datetime_range(
-                start=df[time_col].min(),  # pyright: ignore[reportArgumentType]
-                end=df[time_col].max(),  # pyright: ignore[reportArgumentType]
-                interval=freq,
-                eager=True,
-                time_unit=time_unit,
-            ),  # type: ignore
-        },
+        dimensions=dimensions,
         fill_value=fill_value,
     )
+def complete_date_grid(
+    df: pl.DataFrame,
+    id_col: str | None,
+    time_col: str,
+    freq: str,
+    fill_value: Any = None,
+) -> pl.DataFrame:
+    time_range = pl.date_range(
+        start=df[time_col].min(),  # pyright: ignore[reportArgumentType]
+        end=df[time_col].max(),  # pyright: ignore[reportArgumentType]
+        interval=freq,
+        eager=True,
+    )  # type: ignore
+
+    dimensions = {time_col: time_range}
+
+    if id_col is not None:
+        dimensions[id_col] = df[id_col].unique()
+
+    return complete_grid(
+        df,
+        dimensions=dimensions,
+        fill_value=fill_value,
+    )
+
+
+
+
+def aggregate_timeseries(
+    df: pl.DataFrame,
+    freq: str,
+    value_col: str,
+    date_col: str,
+    fill_value: Any = 0,
+):
+    return (
+        df.group_by_dynamic(
+            index_column=date_col,
+            every=freq,
+        )
+        .agg(
+            pl.col(value_col).sum(),
+            len=pl.len(),
+            mean=pl.col(value_col).sum() / pl.len(),
+        )
+        .pipe(
+            complete_grid,
+            dimensions={
+                date_col: lambda d: pl.date_range(
+                    start=d[date_col].min(),  # pyright: ignore[reportArgumentType]
+                    end=d[date_col].max(),  # pyright: ignore[reportArgumentType]
+                    interval=freq,
+                    eager=True,
+                ),  # type: ignore
+            },
+            fill_value=fill_value,
+        )
+    )
+
+
+def to_hijri(dt: date) -> bool:
+    """Return True if the Gregorian date falls in Ramadan."""
+    return Gregorian.fromdate(dt).to_hijri().month == 9
+
+
+def is_ramadan(dt: date) -> bool:
+    """Return True if the Gregorian date falls in Ramadan."""
+    return Gregorian.fromdate(dt).to_hijri().month == 9
