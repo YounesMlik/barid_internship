@@ -125,7 +125,7 @@ def span_by_id(
     calculate lead time in days
     """
     return (
-        df.group_by(key)
+        df.group_by(key, maintain_order=True)
         .agg(
             start=pl.col(date_col).first(),
             end=pl.col(date_col).last(),
@@ -144,7 +144,7 @@ def survival_table(
         df.with_columns(
             pl.col(value_col).floordiv(bucket_size).mul(bucket_size).alias(bucket_col)
         )
-        .group_by(bucket_col)
+        .group_by(bucket_col, maintain_order=True)
         .agg(events=pl.len())
         .sort(bucket_col)
         .pipe(
@@ -182,7 +182,7 @@ def cumulative_distribution(
         df.with_columns(
             (pl.col(value_col).alias(bucket_col) // bucket_size) * bucket_size
         )
-        .group_by(bucket_col)
+        .group_by(bucket_col, maintain_order=True)
         .agg(count=pl.len())
         .sort(bucket_col)
         .with_columns(
