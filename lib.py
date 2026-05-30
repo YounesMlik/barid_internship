@@ -1,7 +1,9 @@
 import polars as pl
+import numpy as np
 from datetime import date
-from typing import Callable, Literal, Any, Mapping
+from typing import Callable, Literal, Any, Mapping, Optional
 from hijridate import Gregorian
+from coreforecast.scalers import boxcox, boxcox_lambda
 
 
 def complete_grid(
@@ -99,6 +101,11 @@ def aggregate_by_date(
     freq: str,
     value_col: str,
     date_col: str,
+    *,
+    total_col: str = "total",
+    count_col: str = "count",
+    mean_col: str = "mean",
+    std_col: str = "std",
     fill_value: Any = 0,
 ):
     return (
@@ -107,9 +114,10 @@ def aggregate_by_date(
             every=freq,
         )
         .agg(
-            pl.col(value_col).sum(),
-            len=pl.len(),
-            mean=pl.col(value_col).sum() / pl.len(),
+            pl.col(value_col).sum().alias(total_col),
+            pl.len().alias(count_col),
+            pl.col(value_col).mean().alias(mean_col),
+            pl.col(value_col).std().alias(std_col),
         )
         .pipe(complete_date_grid, None, date_col, freq, fill_value)
     )
@@ -164,36 +172,16 @@ def survival_table(
             hazard=pl.col("events") / pl.col("events").cum_sum(reverse=True),
         )
         .with_columns(
+            expected_remaining_time=(
+                (pl.col("survival") * bucket_size).cum_sum(reverse=True)
+                / pl.col("survival")
+            ),
             cum_hazard=pl.col("hazard").cum_sum(),
         )
+        .with_columns(
+            expected_total_time=pl.col(bucket_col) + pl.col("expected_remaining_time")
+        )
         .filter(pl.col("survival") >= 0.001)
-    )
-
-
-def cumulative_distribution(
-    df: pl.DataFrame,
-    value_col: str,
-    bucket_col: str = "bucket",
-    bucket_size: float = 1,
-) -> pl.DataFrame:
-    total = pl.col("count").sum()
-
-    return (
-        df.with_columns(
-            (pl.col(value_col).alias(bucket_col) // bucket_size) * bucket_size
-        )
-        .group_by(bucket_col, maintain_order=True)
-        .agg(count=pl.len())
-        .sort(bucket_col)
-        .with_columns(
-            cum_count=pl.col("count").cum_sum(reverse=True),
-        )
-        .with_columns(
-            ratio=pl.col("count") / total,
-            cum_ratio=pl.col("count").cum_sum(reverse=True) / total,
-            hazard=pl.col("count") / pl.col("cum_count").clip(lower_bound=1),
-        )
-        .filter(pl.col("cum_ratio") >= 0.0001)
     )
 
 
@@ -205,3 +193,14 @@ def to_hijri(dt: date) -> bool:
 def is_ramadan(dt: date) -> bool:
     """Return True if the Gregorian date falls in Ramadan."""
     return Gregorian.fromdate(dt).to_hijri().month == 9
+
+
+def auto_boxcox(
+    x: np.ndarray,
+    method: str,
+    season_length: Optional[int] = None,
+    lower: float = -0.9,
+    upper: float = 2.0,
+):
+    lmbda = boxcox_lambda(x, method, season_length, lower, upper)
+    return boxcox(x, lmbda)
