@@ -1,8 +1,9 @@
 import polars as pl
 import numpy as np
 from datetime import date
-from typing import Callable, Literal, Any, Mapping, Optional
+from typing import Callable, Literal, Any, Mapping, Optional, Iterable
 from hijridate import Gregorian
+import altair as alt
 from coreforecast.scalers import boxcox, boxcox_lambda
 
 
@@ -123,11 +124,23 @@ def aggregate_by_date(
     )
 
 
+TimeUnit = Literal[
+    "nanoseconds",
+    "microseconds",
+    "milliseconds",
+    "seconds",
+    "minutes",
+    "hours",
+    "days",
+]
+
+
 def span_by_id(
     df: pl.DataFrame,
     key: str,
     date_col: str,
     span_col: str = "lead_days",
+    unit: TimeUnit = "days",
 ) -> pl.DataFrame:
     """
     calculate lead time in days
@@ -138,7 +151,11 @@ def span_by_id(
             start=pl.col(date_col).first(),
             end=pl.col(date_col).last(),
         )
-        .with_columns((pl.col("end") - pl.col("start")).dt.total_days().alias(span_col))
+        .with_columns(
+            getattr((pl.col("end") - pl.col("start")).dt, f"total_{unit}")().alias(
+                span_col
+            )
+        )
     )
 
 
@@ -147,6 +164,7 @@ def survival_table(
     value_col: str,
     bucket_size: int = 1,
     bucket_col: str = "bucket",
+    survival_threshold: float = 0.001,
 ) -> pl.DataFrame:
     return (
         df.with_columns(
@@ -181,7 +199,7 @@ def survival_table(
         .with_columns(
             expected_total_time=pl.col(bucket_col) + pl.col("expected_remaining_time")
         )
-        .filter(pl.col("survival") >= 0.001)
+        .filter(pl.col("survival") >= survival_threshold)
     )
 
 
@@ -204,3 +222,115 @@ def auto_boxcox(
 ):
     lmbda = boxcox_lambda(x, method, season_length, lower, upper)
     return boxcox(x, lmbda)
+
+
+def calculate_ratios(
+    operations: pl.DataFrame,
+    column: str,
+    top_n: int = 10,
+) -> pl.DataFrame:
+    return (
+        operations.group_by(column, maintain_order=True)
+        .len("count")
+        .sort("count", descending=True)
+        .with_columns(
+            cum_count=pl.col("count").cum_sum(),
+            ratio=pl.col("count") / pl.col("count").sum(),
+            cum_ratio=pl.col("count").cum_sum() / pl.col("count").sum(),
+        )
+        .head(top_n)
+    )
+
+
+def plot_ratio_bar_chart(
+    df: pl.DataFrame,
+    category_col: str,
+    y_col: Literal["count", "cum_count", "ratio", "cum_ratio"] = "ratio",
+    top_n: int = 10,
+    width: int = 1100,
+    height: int = 400,
+) -> alt.Chart:
+    return (
+        alt.Chart(df.pipe(calculate_ratios, category_col, top_n))
+        .mark_bar()
+        .encode(
+            x=alt.X(f"{category_col}:N", sort=None),
+            y=alt.Y(y_col),
+            tooltip=["count", "cum_count", "ratio", "cum_ratio"],
+        )
+        .properties(width=width, height=height)
+    )
+
+
+def map_groups(
+    df: pl.DataFrame,
+    category_col: str,
+    fn: Callable[[pl.DataFrame], pl.DataFrame],
+):
+    return df.group_by(category_col, maintain_order=True).map_groups(
+        lambda sub_df: sub_df.pipe(fn).with_columns(
+            pl.lit(sub_df[category_col][0]).alias(category_col)
+        )
+    )
+
+
+def filter_categories_by(
+    df: pl.DataFrame,
+    category_col: str,
+    metric_expr: pl.Expr,
+    filter_by: Callable[[pl.DataFrame], pl.DataFrame],
+):
+    top_categories = set(
+        df.group_by(category_col).agg(metric=metric_expr).pipe(filter_by)[category_col]
+    )
+    return df.filter(pl.col(category_col).is_in(top_categories))
+
+
+def filter_categories_by_rank(
+    df: pl.DataFrame,
+    category_col: str,
+    top_k: int,
+    metric_expr: pl.Expr = pl.len(),
+):
+    return df.pipe(
+        filter_categories_by,
+        category_col,
+        metric_expr,
+        lambda x: x.top_k(top_k, by="metric"),
+    )
+
+
+def filter_categories_by_threshold(
+    df: pl.DataFrame,
+    category_col: str,
+    threshold: int,
+    metric_expr: pl.Expr = pl.len(),
+):
+    return df.pipe(
+        filter_categories_by,
+        category_col,
+        metric_expr,
+        lambda x: x.filter(pl.col("metric") >= threshold),
+    )
+
+
+def add_dropdown_filter(chart: alt.Chart, df: pl.DataFrame, field: str, default=None):
+    values = df[field].unique().sort().to_list()
+
+    param = alt.param(
+        field,
+        value=values[0] if default is None else default,
+        bind=alt.binding_select(
+            options=values,
+            name=f"{field}: ",
+        ),
+    )
+
+    return chart.add_params(param).transform_filter(param == alt.datum[field])
+
+
+def add_dropdown_filters(chart: alt.Chart, df: pl.DataFrame, fields: Iterable[str]):
+    for field in fields:
+        chart = add_dropdown_filter(chart, df, field, default=None)
+
+    return chart

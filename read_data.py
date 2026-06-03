@@ -4,7 +4,6 @@ from datetime import date
 from io import StringIO
 import main
 
-
 smi_suiviexpedition_PATH = "data/smi_suiviexpedition"
 
 smi_situa_journa_distrib4_PATH = "data/smi_situa_journa_distrib4"
@@ -29,6 +28,10 @@ def read_smi_envoisbyproduitintern_many(
         raw_dfs.append(raw_df)
     data: pl.DataFrame = pl.concat(raw_dfs)
     data = data.unique("codeenvoi_")
+    data = data.with_columns(
+        pl.col("pouds_reel_").str.replace(",", ".").cast(pl.Float64),
+        pl.col("poids_volume_").str.replace(",", ".").cast(pl.Float64),
+    )
     data = data.sort("datedepot")
     return data
 
