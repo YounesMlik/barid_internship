@@ -107,6 +107,7 @@ def aggregate_by_date(
     count_col: str = "count",
     mean_col: str = "mean",
     std_col: str = "std",
+    extra_cols: Iterable[pl.Expr] = {},
     fill_value: Any = 0,
 ):
     return (
@@ -119,6 +120,7 @@ def aggregate_by_date(
             pl.len().alias(count_col),
             pl.col(value_col).mean().alias(mean_col),
             pl.col(value_col).std().alias(std_col),
+            *extra_cols,
         )
         .pipe(complete_date_grid, None, date_col, freq, fill_value)
     )
@@ -226,35 +228,41 @@ def auto_boxcox(
 
 def calculate_ratios(
     operations: pl.DataFrame,
-    column: str,
-    top_n: int = 10,
+    column: str | pl.Expr,
+    agg_expr: pl.Expr = pl.len(),
+    top_k: int = 10,
 ) -> pl.DataFrame:
     return (
         operations.group_by(column, maintain_order=True)
-        .len("count")
+        .agg(agg_expr.alias("count"))
         .sort("count", descending=True)
         .with_columns(
             cum_count=pl.col("count").cum_sum(),
             ratio=pl.col("count") / pl.col("count").sum(),
             cum_ratio=pl.col("count").cum_sum() / pl.col("count").sum(),
         )
-        .head(top_n)
+        .head(top_k)
     )
 
 
 def plot_ratio_bar_chart(
     df: pl.DataFrame,
-    category_col: str,
+    category_col: str | pl.Expr,
+    agg_expr: pl.Expr = pl.len(),
     y_col: Literal["count", "cum_count", "ratio", "cum_ratio"] = "ratio",
-    top_n: int = 10,
+    top_k: int = 10,
     width: int = 1100,
     height: int = 400,
 ) -> alt.Chart:
+    if isinstance(category_col, pl.Expr):
+        category_col_name = category_col.meta.output_name()
+    else:
+        category_col_name = category_col
     return (
-        alt.Chart(df.pipe(calculate_ratios, category_col, top_n))
+        alt.Chart(df.pipe(calculate_ratios, category_col, agg_expr, top_k))
         .mark_bar()
         .encode(
-            x=alt.X(f"{category_col}:N", sort=None),
+            x=alt.X(f"{category_col_name}:N", sort=None),
             y=alt.Y(y_col),
             tooltip=["count", "cum_count", "ratio", "cum_ratio"],
         )
@@ -312,6 +320,20 @@ def filter_categories_by_threshold(
         metric_expr,
         lambda x: x.filter(pl.col("metric") >= threshold),
     )
+
+
+# def filter_categories_by_ratio(
+#     df: pl.DataFrame,
+#     category_col: str,
+#     threshold: int,
+#     metric_expr: pl.Expr = pl.len(),
+# ):
+#     return df.pipe(
+#         filter_categories_by,
+#         category_col,
+#         metric_expr,
+#         lambda x: x.filter(pl.col("metric") >= threshold),
+#     )
 
 
 def add_dropdown_filter(chart: alt.Chart, df: pl.DataFrame, field: str, default=None):
