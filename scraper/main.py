@@ -5,6 +5,7 @@ from scraper import etats, historique
 
 import main
 import lib
+import read_data
 import importlib
 
 importlib.reload(lib)
@@ -22,7 +23,7 @@ def run_etats():
 
 def run_historique():
     cab_list = (
-        lib.read_smi_envoisbyproduitintern_many()
+        read_data.read_smi_envoisbyproduitintern_many()
         .sort("datedepot", descending=True)["codeenvoi_"]
         .to_list()
     )
@@ -36,7 +37,7 @@ def run_historique():
 
 # def run_historique_offline():
 #     cab_list = (
-#         lib.read_smi_suiviexpedition_many()
+#         read_data.read_smi_suiviexpedition_many()
 #         .sort("DATE_DERNIER_STATUT", descending=True)["CAB"]
 #         .to_list()[:1]
 #     )
