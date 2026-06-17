@@ -1,10 +1,12 @@
 import polars as pl
 import numpy as np
-from datetime import date
-from typing import Callable, Literal, Any, Mapping, Optional, Iterable
+from datetime import date, timedelta
+from typing import Callable, Literal, Any, Mapping, Optional, Iterable, Sequence
 from hijridate import Gregorian
 import altair as alt
-from coreforecast.scalers import boxcox, boxcox_lambda
+from operator import methodcaller
+
+# from coreforecast.scalers import boxcox, boxcox_lambda
 
 
 def complete_grid(
@@ -215,15 +217,15 @@ def is_ramadan(dt: date) -> bool:
     return Gregorian.fromdate(dt).to_hijri().month == 9
 
 
-def auto_boxcox(
-    x: np.ndarray,
-    method: str,
-    season_length: Optional[int] = None,
-    lower: float = -0.9,
-    upper: float = 2.0,
-):
-    lmbda = boxcox_lambda(x, method, season_length, lower, upper)
-    return boxcox(x, lmbda)
+# def auto_boxcox(
+#     x: np.ndarray,
+#     method: str,
+#     season_length: Optional[int] = None,
+#     lower: float = -0.9,
+#     upper: float = 2.0,
+# ):
+#     lmbda = boxcox_lambda(x, method, season_length, lower, upper)
+#     return boxcox(x, lmbda)
 
 
 def calculate_ratios(
@@ -322,20 +324,6 @@ def filter_categories_by_threshold(
     )
 
 
-# def filter_categories_by_ratio(
-#     df: pl.DataFrame,
-#     category_col: str,
-#     threshold: int,
-#     metric_expr: pl.Expr = pl.len(),
-# ):
-#     return df.pipe(
-#         filter_categories_by,
-#         category_col,
-#         metric_expr,
-#         lambda x: x.filter(pl.col("metric") >= threshold),
-#     )
-
-
 def add_dropdown_filter(chart: alt.Chart, df: pl.DataFrame, field: str, default=None):
     values = df[field].unique().sort().to_list()
 
@@ -356,3 +344,66 @@ def add_dropdown_filters(chart: alt.Chart, df: pl.DataFrame, fields: Iterable[st
         chart = add_dropdown_filter(chart, df, field, default=None)
 
     return chart
+
+
+def make_hist_cols(
+    value_col: str,
+    bins: Sequence[float | int],
+    agg_method_name: Literal["sum", "len"] = "sum",
+    separator: str = "_",
+    prefix: str | None = None,
+):
+    prefix = prefix or value_col
+    agg_method = methodcaller(agg_method_name)
+
+    return [
+        (
+            pl.col(value_col)
+            .filter(pl.col(value_col).is_between(lo, hi, closed="left"))
+            .pipe(agg_method)
+            .alias(
+                f"{prefix}{separator}{agg_method_name}{separator}{lo}{separator}{hi}"
+            )
+        )
+        for lo, hi in zip(bins[:-1], bins[1:])
+    ]
+
+
+def make_relative_hist_cols(
+    value_col: str,
+    bins: Sequence[float | int],
+    agg_method_name: Literal["sum", "len"] = "sum",
+    separator: str = "_",
+    prefix: str | None = None,
+):
+    prefix = prefix or value_col
+
+    hist_cols = make_hist_cols(
+        value_col=value_col,
+        bins=bins,
+        agg_method_name=agg_method_name,
+        separator=separator,
+        prefix=prefix,
+    )
+
+    total = methodcaller(agg_method_name)(pl.col(value_col))
+
+    return [expr / total for expr in hist_cols]
+
+
+# def exp_weighted_mean(
+#     df: pl.DataFrame,
+#     cols: pl.Expr | list[str] | str,
+#     halflife: float,
+# ) -> pl.DataFrame:
+#     if isinstance(cols, str | list):
+#         cols = pl.col(cols)
+
+#     weights = 0.5 ** (np.arange(len(df) - 1, -1, -1) / halflife)
+
+#     return df.select(cols.mul(weights).sum().truediv(weights.sum()))
+
+
+def exp_weighted_mean(expr: pl.Expr, halflife: float) -> pl.Expr:
+    w = 0.5 ** ((pl.len() - 1 - pl.int_range(0, pl.len())) / halflife)
+    return (expr * w).sum() / w.sum()
