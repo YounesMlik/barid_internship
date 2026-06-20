@@ -111,10 +111,12 @@ def aggregate_by_date(
     std_col: str = "std",
     extra_cols: Iterable[pl.Expr] = {},
     fill_value: Any = 0,
+    group_cols: str | list[str] | pl.Expr,
 ):
     return (
         df.group_by_dynamic(
             index_column=date_col,
+            group_by=group_cols,
             every=freq,
         )
         .agg(
@@ -391,19 +393,32 @@ def make_relative_hist_cols(
     return [expr / total for expr in hist_cols]
 
 
-# def exp_weighted_mean(
-#     df: pl.DataFrame,
-#     cols: pl.Expr | list[str] | str,
-#     halflife: float,
-# ) -> pl.DataFrame:
-#     if isinstance(cols, str | list):
-#         cols = pl.col(cols)
-
-#     weights = 0.5 ** (np.arange(len(df) - 1, -1, -1) / halflife)
-
-#     return df.select(cols.mul(weights).sum().truediv(weights.sum()))
-
-
 def exp_weighted_mean(expr: pl.Expr, halflife: float) -> pl.Expr:
     w = 0.5 ** ((pl.len() - 1 - pl.int_range(0, pl.len())) / halflife)
     return (expr * w).sum() / w.sum()
+
+
+def add_weekday_dummies(df):
+    return df.with_columns(pl.col("ds").dt.weekday().alias("weekday")).to_dummies(
+        columns=["weekday"],
+        drop_first=True,
+    )
+
+
+def top_n_or_other(df: pl.DataFrame, col: str, n: int = 10):
+    top_vals = (
+        df[col]
+        .value_counts()
+        .sort("count", descending=True)
+        .head(n)
+        .select(col)
+        .to_series()
+        .to_list()
+    )
+
+    return df.with_columns(
+        pl.when(pl.col(col).is_in(top_vals))
+        .then(pl.col(col))
+        .otherwise(pl.lit("other"))
+        .alias(col)
+    )
