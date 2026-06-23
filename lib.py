@@ -1,12 +1,24 @@
 import polars as pl
 import numpy as np
 from datetime import date, timedelta
-from typing import Callable, Literal, Any, Mapping, Optional, Iterable, Sequence
+from typing import (
+    Callable,
+    Literal,
+    Any,
+    Mapping,
+    Optional,
+    Iterable,
+    Sequence,
+    ParamSpec,
+    Concatenate,
+)
 from hijridate import Gregorian
 import altair as alt
+from polars._utils.parse import parse_into_list_of_expressions, parse_into_expression
+from polars._typing import IntoExpr
 from operator import methodcaller
 
-# from coreforecast.scalers import boxcox, boxcox_lambda
+P = ParamSpec("P")
 
 
 def complete_grid(
@@ -15,7 +27,7 @@ def complete_grid(
     dimensions: Mapping[
         str, pl.Series | pl.Expr | Callable[[pl.DataFrame], pl.Series | pl.Expr]
     ],
-    on: list[str] | None = None,
+    on: Sequence[str] | None = None,
     fill_value: Any = None,
 ) -> pl.DataFrame:
 
@@ -24,7 +36,6 @@ def complete_grid(
     for name, values in dimensions.items():
         if callable(values):
             values = values(df)
-            print("hiiii")
 
         if isinstance(values, pl.Expr):
             grid = df.select(values.alias(name))
@@ -36,10 +47,10 @@ def complete_grid(
     full = grids[0]
 
     for g in grids[1:]:
-        full = full.join(g, how="cross")
+        full = full.join(g, how="cross", maintain_order="left_right")
 
     keys = on or list(dimensions)
-    result = full.join(df, on=keys, how="left").sort(keys)
+    result = full.join(df, on=keys, how="left", maintain_order="right_left").sort(keys)
 
     if fill_value is not None:
         result = result.fill_null(fill_value)
@@ -111,7 +122,7 @@ def aggregate_by_date(
     std_col: str = "std",
     extra_cols: Iterable[pl.Expr] = {},
     fill_value: Any = 0,
-    group_cols: str | list[str] | pl.Expr,
+    group_cols: IntoExpr | Iterable[IntoExpr] = [],
 ):
     return (
         df.group_by_dynamic(
@@ -232,7 +243,7 @@ def is_ramadan(dt: date) -> bool:
 
 def calculate_ratios(
     operations: pl.DataFrame,
-    column: str | pl.Expr,
+    column: IntoExpr,
     agg_expr: pl.Expr = pl.len(),
     top_k: int = 10,
 ) -> pl.DataFrame:
@@ -260,7 +271,7 @@ def plot_ratio_bar_chart(
 ) -> alt.Chart:
     if isinstance(category_col, pl.Expr):
         category_col_name = category_col.meta.output_name()
-    else:
+    elif isinstance(category_col, str):
         category_col_name = category_col
     return (
         alt.Chart(df.pipe(calculate_ratios, category_col, agg_expr, top_k))
@@ -327,7 +338,7 @@ def filter_categories_by_threshold(
 
 
 def add_dropdown_filter(chart: alt.Chart, df: pl.DataFrame, field: str, default=None):
-    values = df[field].unique().sort().to_list()
+    values = df[field].unique(maintain_order=True).to_list()
 
     param = alt.param(
         field,
@@ -405,7 +416,9 @@ def add_weekday_dummies(df):
     )
 
 
-def top_n_or_other(df: pl.DataFrame, col: str, n: int = 10):
+def top_n_or_other(
+    df: pl.DataFrame, col: str, n: int = 10, other_col_name: str = "other"
+):
     top_vals = (
         df[col]
         .value_counts()
@@ -419,6 +432,25 @@ def top_n_or_other(df: pl.DataFrame, col: str, n: int = 10):
     return df.with_columns(
         pl.when(pl.col(col).is_in(top_vals))
         .then(pl.col(col))
-        .otherwise(pl.lit("other"))
+        .otherwise(pl.lit(other_col_name))
         .alias(col)
     )
+
+
+def pipe_cols(
+    df: pl.DataFrame,
+    cols: str | Sequence[str],
+    fn: Callable[Concatenate[pl.DataFrame, P], pl.DataFrame],
+    *args: Any,
+    **kwargs: Any,
+):
+    return df.with_columns(df.select(cols).pipe(fn, *args, **kwargs))
+
+
+def as_expr(into_expr: IntoExpr) -> pl.Expr:
+    """Normalize a single IntoExpr to Expr."""
+    return pl.Expr._from_pyexpr(parse_into_expression(into_expr))
+
+def as_exprs(into_expr: IntoExpr | Iterable[IntoExpr]) -> list[pl.Expr]:
+    """Normalize one or many IntoExpr to a list[Expr]."""
+    return [pl.Expr._from_pyexpr(py_expr) for py_expr in parse_into_list_of_expressions(into_expr)]
