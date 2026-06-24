@@ -1,9 +1,10 @@
+#import "@preview/headcount:0.1.1": *
+
 #let IMAGE_BOX_MAX_WIDTH = 120pt
 #let IMAGE_BOX_MAX_HEIGHT = 50pt
 
 #let supported-langs = ("en", "fr", "ar")
 
-#let full-page-chapter = state("full-page-chapter", false)
 
 #let cover-page(
   title,
@@ -143,6 +144,13 @@
   heading-numbering: "1.1",
   accent-color: rgb("#ff4136"),
   defense-date: none,
+
+  dedication: none,
+  acknowledgments: none,
+  abstract-fr: none,
+  abstract-en: none,
+  abbreviations: none,
+
   body,
 ) = {
   if lang == none {
@@ -188,17 +196,28 @@
     }
   }) if features.contains("header-chapter-name")
 
-  set text(lang: lang, size: 13pt)
+  set text(lang: lang, size: 12pt)
+  set par(justify: true)
   set heading(numbering: heading-numbering)
 
+  set figure(numbering: dependent-numbering("1.1")) // chapter dependant numbering
+  set figure.caption(separator: " - ")
+  show figure.where(kind: image): set figure.caption(position: bottom)
+  show figure.where(kind: table): set figure.caption(position: top)
+  show figure.where(kind: table): it => {
+    show figure.caption: strong
+    it
+  }
+
   show heading: it => {
+    if it.level == 1 {
+      pagebreak(weak: true)
+    }
     if it.level == 1 and it.numbering != none {
       if features.contains("full-page-chapter-title") {
-        pagebreak()
-        full-page-chapter.update(true)
+        set page(footer: none)
 
-        v(1fr)
-        [
+        align(horizon)[
           #text(weight: "regular", size: 30pt)[
             #dict.chapter #counter(heading).display()
           ]
@@ -208,18 +227,14 @@
           ]
           #line(start: (0%, -1%), end: (15%, -1%), stroke: 2pt + accent-color)
         ]
-        v(1fr)
 
         pagebreak()
       } else {
-        pagebreak()
-        full-page-chapter.update(false)
         v(40pt)
         text(size: 30pt)[#dict.chapter #counter(heading).display() #linebreak() #it.body ]
         v(60pt)
       }
     } else {
-      full-page-chapter.update(false)
       v(5pt)
       [#it]
       v(12pt)
@@ -239,6 +254,7 @@
   }
 
   set page(numbering: none)
+
   cover-page(
     title,
     subtitle,
@@ -253,47 +269,83 @@
     dict,
   )
 
+  pagebreak()
+  pagebreak()
+
+  counter(page).update(1)
+
   set page(
-    numbering: "1",
+    numbering: "i",
     number-align: center,
     footer: context {
       let page-number = counter(page).display()
-      if not full-page-chapter.get() {
-        line(length: 100%, stroke: 0.5pt)
-        v(-2pt)
-        text(size: 12pt, weight: "regular")[
-          #footer-text
-          #h(1fr)
-          #page-number
-          #h(1fr)
-          #academic-year
-        ]
-      }
-      full-page-chapter.update(false)
+      line(length: 100%, stroke: 0.5pt)
+      v(-2pt)
+      text(size: 12pt, weight: "regular")[
+        #footer-text
+        #h(1fr)
+        #page-number
+        #h(1fr)
+        #academic-year
+      ]
     },
   )
 
-  pagebreak()
+  // Dedication (i)
+  if dedication != none {
+    align(center + horizon)[
+      #heading(level: 1, numbering: none, outlined: false)[#dict.dedication]
+      #v(2em)
+      #dedication
+    ]
+  }
 
-  // Table of contents.
+  // Acknowledgments (ii)
+  if acknowledgments != none {
+    heading(level: 1, numbering: none, outlined: false)[#dict.acknowledgments]
+    v(2em)
+    acknowledgments
+  }
+
+  // Abstract EN (iv)
+  if abstract-en != none {
+    heading(level: 1, numbering: none, outlined: false)[#dict.abstract]
+    v(2em)
+    abstract-en
+  }
+
+  // Abstract FR (iii)
+  if abstract-fr != none {
+    heading(level: 1, numbering: none, outlined: false)[#dict.abstract (FR)]
+    v(2em)
+    abstract-fr
+  }
+
+  // Table of contents (v)
   outline(depth: 3, indent: auto)
 
-  pagebreak()
+  // List of abbreviations (vi)
+  if abbreviations != none {
+    heading(level: 1, numbering: none)[#dict.abbreviations]
+    abbreviations
+  }
 
-  // Table of figures.
+  // List of figures (vii)
+  heading(level: 1, numbering: none)[#dict.figures_table]
   outline(
-    title: dict.figures_table,
+    title: none,
     target: figure.where(kind: image),
   )
 
-  pagebreak()
-
+  // List of tables (viii)
+  heading(level: 1, numbering: none)[#dict.tables_table]
   outline(
-    title: dict.tables_table,
+    title: none,
     target: figure.where(kind: table),
   )
 
-  pagebreak()
+  counter(page).update(1)
+  set page(numbering: "1")
 
   // Main body.
   body

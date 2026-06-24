@@ -11,5 +11,10 @@
 
   "chapter": "الفصل",
   "defended_on_pre_date": "نوقشت بتاريخ",
-  "defended_on_post_date": "أمام لجنة المناقشة المكونة من"
+  "defended_on_post_date": "أمام لجنة المناقشة المكونة من",
+
+  "dedication": "إهداء",
+  "acknowledgments": "شكر وتقدير",
+  "abstract": "ملخص",
+  "abbreviations": "قائمة الاختصارات"
 }

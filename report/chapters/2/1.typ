@@ -1,5 +1,3 @@
-== General Methodological Approach
-
 The methodological framework adopted in this internship is designed to address the challenges associated with extracting, structuring, and forecasting operational data from legacy postal information systems. Given the absence of a dedicated analytical infrastructure, the approach combines data engineering techniques, web automation, and statistical forecasting methods into a unified pipeline.
 
 The overall methodology follows a structured data-driven process composed of four main stages:

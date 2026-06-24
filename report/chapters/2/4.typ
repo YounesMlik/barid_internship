@@ -1,6 +1,5 @@
 #import "@preview/fletcher:0.5.8" as fletcher: diagram, edge, node, shapes
 
-== 2.4 Data Engineering Pipeline (ETL)
 
 The data engineering pipeline constitutes the transformation layer between raw extracted operational data and structured datasets used for analytical modeling. In the context of this internship, the pipeline is responsible for integrating heterogeneous sources, cleaning inconsistent records, and producing time-consistent datasets suitable for forecasting.
 

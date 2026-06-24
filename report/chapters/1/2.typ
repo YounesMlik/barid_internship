@@ -1,178 +1,167 @@
+International mail activities represent an important component of Barid Al-Maghrib's postal operations. They enable the exchange of letters, documents, and parcels between Morocco and foreign destinations through a network governed by international agreements, customs procedures, and operational standards established mainly by the Universal Postal Union (UPU) @upu.
 
-
-== International Mail Activities
-
-International mail activities constitute a strategic component of Barid Al-Maghrib's operations. They enable the exchange of letters, documents, and parcels between Morocco and foreign destinations through a globally standardized postal network. These operations are governed by international conventions, customs regulations, and operational standards defined mainly by the Universal Postal Union (UPU) @upu.
-
-The continuous expansion of global trade, the growth of e-commerce, and the importance of the Moroccan diaspora have significantly increased the volume and complexity of international postal flows. As a result, international mail has evolved from a traditional correspondence service into a critical logistics and cross-border commerce infrastructure.
+The growth of e-commerce, the intensification of international trade, and the importance of exchanges with Moroccan communities living abroad have increased both the volume and complexity of international postal traffic. As a result, managing these flows has become an important operational challenge requiring efficient transportation planning, resource allocation, and monitoring mechanisms.
 
 === Universal Postal Framework
 
-The international postal system is structured around the Universal Postal Union (UPU), a specialized agency of the United Nations founded in 1874. Its primary objective is to coordinate postal policies among member countries and ensure a unified international postal territory for the exchange of mail @upu_history.
+International postal exchanges are organized within the framework of the Universal Postal Union (UPU), a specialized agency of the United Nations founded in 1874. The UPU defines common operational and technical standards that facilitate the exchange of postal items between member countries and ensure interoperability between national postal networks @upu_history.
 
-Under this framework, postal operators such as Barid Al-Maghrib are designated operators responsible for:
+As the designated postal operator for Morocco, Barid Al-Maghrib is responsible for:
 
-- Ensuring exchange of international mail;
-- Applying standardized postal tariffs and formats;
-- Guaranteeing interoperability of tracking systems;
-- Managing compensation mechanisms between countries;
-- Ensuring compliance with customs and security regulations.
+- Ensuring the exchange of international mail;
+- Applying standardized postal procedures and formats;
+- Supporting interoperability of tracking systems;
+- Managing compensation mechanisms between operators;
+- Complying with customs and security regulations.
 
-The UPU establishes a set of technical standards known as the Postal Operations Manual, which defines how international mail must be processed, routed, and tracked across postal networks @upu_manual.
-
-These standards are essential to ensure end-to-end interoperability between heterogeneous national postal systems.
+These standards provide a common framework for processing, routing, and tracking international shipments across heterogeneous postal systems @upu_manual.
 
 === Structure of International Postal Exchanges
 
-International mail exchanges are based on bilateral and multilateral agreements between designated postal operators. Morocco exchanges mail with more than 180 countries through a structured logistics network composed of air transport carriers, international exchange offices, and foreign postal administrations @upu_stats.
+International postal exchanges rely on agreements between designated postal operators and involve coordination among transportation providers, exchange offices, customs authorities, and destination postal administrations.
 
-The international flow is generally divided into two main categories:
+International mail is generally divided into two categories:
 
-- Outgoing international mail: shipments originating from Morocco and destined abroad;
-- Incoming international mail: shipments arriving in Morocco from foreign countries.
+- Outgoing international mail, corresponding to shipments sent from Morocco to foreign destinations;
+- Incoming international mail, corresponding to shipments arriving in Morocco from abroad.
 
-This study focuses exclusively on outgoing international mail flows.
+The present internship focuses exclusively on outgoing international mail, which constitutes the dataset analyzed for forecasting purposes.
 
-The routing of international mail depends on:
+The routing of outgoing shipments depends on several operational factors, including:
 
 - Destination country;
 - Transport availability;
 - Customs requirements;
-- Service level (standard, express, registered).
+- Service level selected by the customer.
 
 === International Postal Products
 
-Barid Al-Maghrib offers several categories of international postal products adapted to different customer needs in terms of speed, reliability, and cost.
+Barid Al-Maghrib offers several categories of international services adapted to different customer requirements regarding delivery times, traceability, and cost.
 
 ==== Ordinary International Mail
 
-Ordinary mail includes letters, documents, and low-value parcels. These items are transported through the international postal network without enhanced tracking guarantees.
+Ordinary mail includes letters, documents, and low-value parcels transported through the international postal network without advanced tracking services.
 
-Although volume has decreased due to digital communication, this category remains relevant for administrative and legal correspondence.
+Although the use of digital communication has reduced traditional correspondence volumes, this category remains relevant for certain administrative procedures and official exchanges.
 
 ==== Registered Mail
 
-Registered international mail provides a tracking number and proof of deposit. It ensures greater security and is commonly used for legal documents and official correspondence.
+Registered mail provides proof of deposit and shipment traceability through a unique identification number.
 
-Registered items benefit from:
+This service offers:
 
-- Unique identification codes;
-- Tracking visibility at major transit points;
-- Delivery confirmation in destination country.
+- Unique shipment identification;
+- Tracking information at major transit stages;
+- Delivery confirmation in the destination country.
+
+Registered services are commonly used for administrative and legal documents.
 
 ==== Express Mail Service (EMS)
 
-The Express Mail Service (EMS) is a premium international service developed under the coordination of the UPU. It provides:
+The Express Mail Service (EMS) is an international premium service coordinated within the UPU framework.
 
-- Priority handling;
-- Faster transit times;
-- End-to-end tracking;
+It offers:
+
+- Priority processing;
+- Reduced transit times;
+- End-to-end shipment tracking;
 - Delivery confirmation.
 
-EMS is particularly used for urgent documents and high-value shipments @upu_ems.
+EMS is generally used for urgent documents and time-sensitive shipments @upu_ems.
 
 ==== International Parcels
 
-International parcels represent the fastest-growing segment due to e-commerce expansion. These shipments include:
+International parcels have become one of the most dynamic segments of postal activity due to the expansion of cross-border e-commerce.
 
-- Consumer goods;
+These shipments may include:
+
+- Consumer products;
 - Gifts;
-- Commercial products;
+- Commercial merchandise;
 - Personal belongings.
 
-They may include optional services such as insurance, declared value, or proof of delivery depending on destination constraints.
+Additional services such as insurance or proof of delivery may be offered depending on destination-specific constraints.
 
 === Operational Flow of Outgoing International Mail
 
-The operational processing of outgoing international mail follows a multi-stage logistics pipeline.
+Outgoing international shipments follow several operational stages before reaching destination countries.
 
 ==== Acceptance Stage
 
-Shipments are first deposited at post offices or authorized collection centers. At this stage, the following information is recorded:
+Shipments are accepted at post offices or authorized collection points. Information recorded during this stage includes:
 
-- Sender and recipient details;
+- Sender and recipient information;
 - Destination country;
 - Weight and dimensions;
-- Service type;
-- Customs declaration (if applicable).
+- Selected service;
+- Customs declaration when required.
 
-Each shipment is assigned a unique identifier enabling tracking throughout the postal network.
+Each shipment receives a unique identifier allowing subsequent tracking within the postal information system.
 
 ==== Sorting and Consolidation
 
-After acceptance, items are transferred to sorting centers where they are grouped according to destination and transport route.
+Accepted items are transferred to sorting facilities where they are grouped according to destination and transportation routes.
 
-Operations include:
+Sorting activities include:
 
 - Barcode scanning;
 - Automated or manual sorting;
-- Dispatch creation;
-- Containerization into postal sacks.
+- Dispatch preparation;
+- Consolidation into postal containers.
 
-Modern sorting systems rely heavily on information systems to ensure accuracy and traceability.
+Information systems play an important role in ensuring shipment traceability and reducing operational errors.
 
 ==== Customs Processing
 
-International shipments containing goods are subject to customs controls. This step involves:
+Shipments containing goods are subject to customs procedures, including verification of declared contents, valuation, and compliance with import and export regulations.
 
-- Verification of declared content;
-- Validation of value and classification;
-- Compliance with import/export regulations.
-
-Customs procedures represent one of the main sources of delay in international postal logistics.
+Customs clearance times may vary significantly between destination countries and can affect overall delivery performance.
 
 ==== Dispatch and Transportation
 
-Sorted mail is consolidated into dispatch units and transported via air or land carriers to destination countries or transit hubs.
+After sorting and customs processing, shipments are consolidated into dispatches and transported mainly by air carriers toward destination countries or transit hubs.
 
-Air transport remains the dominant mode for international postal flows due to speed and global coverage.
+Air transportation remains the predominant mode for international postal exchanges because of its speed and geographical coverage.
 
 ==== Exchange with Foreign Operators
 
-Upon arrival in the destination country, mail is transferred to the designated postal operator, which ensures final delivery.
+Once shipments arrive in the destination country, responsibility is transferred to the designated postal operator, which manages the final delivery process.
 
-End-to-end tracking visibility depends on data exchange between postal operators and the interoperability of their information systems.
+The availability of tracking information depends on the level of interoperability between postal information systems and the quality of electronic data exchange.
 
 === Characteristics of Moroccan Outgoing International Mail
 
-Outgoing international mail from Morocco exhibits several structural characteristics.
+The analysis performed during this internship highlights several characteristics of Morocco's outgoing international postal flows.
 
-First, a large proportion of shipments originate from major urban centers such as Casablanca, Rabat, Marrakech, Tangier, and Agadir. These cities concentrate economic activity, diaspora-related services, and e-commerce transactions @hcp_morocco.
+A significant share of shipments originates from major urban areas such as Casablanca, Rabat, Marrakech, Tangier, and Agadir, reflecting the concentration of economic activities and commercial exchanges @hcp_morocco.
 
-Second, destination countries are highly diversified, reflecting Morocco's global commercial and migratory links. Europe remains the primary destination region, followed by North America and the Middle East.
+Destination countries are diverse, although European countries account for a substantial proportion of outgoing shipments due to historical, commercial, and migratory ties.
 
-Third, the flow exhibits strong temporal seasonality. Empirical analysis conducted during this internship shows a significant increase in shipment volumes prior to Ramadan periods. This pattern is consistent with cultural and religious practices involving gift exchange and remittances among diaspora communities.
+The exploratory analysis conducted during the internship also revealed a pronounced seasonal pattern. Shipment volumes tend to increase during periods preceding Ramadan, which may be associated with intensified exchanges between Morocco and Moroccan communities residing abroad.
 
-Other influencing factors include:
+Other factors likely influencing shipment volumes include:
 
-- E-commerce promotional cycles;
+- E-commerce promotional campaigns;
 - Summer holiday periods;
-- International shipping disruptions;
-- Exchange rate fluctuations affecting cross-border trade.
+- International transportation disruptions;
+- Variations in exchange rates affecting international trade.
 
 === Operational Challenges
 
-International postal operations face multiple structural and operational challenges.
+Managing international postal flows presents several operational challenges.
 
-One of the main challenges is demand variability. Shipment volumes fluctuate significantly over time, complicating capacity planning and resource allocation.
+Demand variability complicates transportation planning and resource allocation, particularly during seasonal peaks.
 
-Another challenge is customs dependency. Clearance times vary depending on destination country regulations and the nature of goods transported.
+Customs procedures introduce additional uncertainty because processing times depend on destination-country regulations and shipment characteristics.
 
-Additionally, interoperability between postal operators remains uneven. While the UPU provides standardized frameworks, implementation varies across countries.
+Furthermore, existing operational information systems are primarily designed to support day-to-day processing activities and may require additional preparation before data can be exploited for analytical and forecasting purposes.
 
-Finally, legacy information systems often prioritize operational processing rather than analytical exploitation, making large-scale data extraction difficult for forecasting and decision-support applications.
-
-These constraints justify the need for advanced data-driven approaches to improve forecasting accuracy and operational planning.
+These constraints motivated the development of forecasting models during the internship in order to better anticipate shipment volumes and support operational planning.
 
 === Strategic Importance
 
-International mail activities are increasingly strategic for Barid Al-Maghrib due to the rise of cross-border e-commerce and diaspora-driven demand.
+International mail activities contribute to the diversification of Barid Al-Maghrib's services and support Morocco's integration into global trade networks.
 
-They contribute to:
+Improving the predictability of outgoing international mail volumes can assist decision-makers in optimizing transportation planning, anticipating workload fluctuations, and improving service quality.
 
-- Foreign exchange inflows;
-- Economic integration with global markets;
-- Service diversification of the postal operator;
-- Strengthening Morocco's logistics infrastructure.
-
-In this context, improving the predictability of outgoing international mail flows is essential for optimizing transport planning, resource allocation, and service quality.
+Within the scope of this internship, forecasting outgoing international mail flows is therefore considered a decision-support task aimed at providing better visibility into future shipment trends.

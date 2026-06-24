@@ -1,6 +1,5 @@
 #import "@preview/fletcher:0.5.8" as fletcher: diagram, edge, node, shapes
 
-== Data Collection Strategy
 
 The data collection strategy constitutes a central component of the methodological pipeline. It defines how raw operational data is extracted from heterogeneous information systems within Barid Al-Maghrib and transformed into structured datasets suitable for analysis.
 

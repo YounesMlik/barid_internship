@@ -1,5 +1,3 @@
-== Construction of the Forecasting Dataset
-
 The objective of the forecasting stage is to predict future international postal activity based on historical observations. However, the data collected from operational information systems are recorded at the shipment level and therefore cannot be directly used by forecasting models. A dedicated processing stage was consequently implemented to transform transactional data into regularly spaced time series suitable for statistical analysis.
 
 === Selection of the Reference Dataset

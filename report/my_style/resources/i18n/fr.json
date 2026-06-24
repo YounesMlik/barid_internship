@@ -11,5 +11,10 @@
 
   "chapter": "Chapitre",
   "defended_on_pre_date": "Soutenu le",
-  "defended_on_post_date": "devant le jury composé de"
+  "defended_on_post_date": "devant le jury composé de",
+
+  "dedication": "Dédicace",
+  "acknowledgments": "Remerciements",
+  "abstract": "Résumé",
+  "abbreviations": "Liste des abréviations"
 }

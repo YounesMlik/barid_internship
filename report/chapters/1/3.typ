@@ -1,153 +1,101 @@
-== Information Systems
+The information systems used by Barid Al-Maghrib constitute the primary source of operational data exploited during this internship. They support the management of postal activities, shipment tracking, and the consultation of statistical reports used by operational teams.
 
-The information systems of Barid Al-Maghrib (BAM) constitute the technological backbone supporting postal operations, logistics management, and customer services. These systems are responsible for managing the end-to-end lifecycle of postal items, from acceptance at post offices to final delivery or international exchange.
-
-Over the last decades, BAM has progressively modernized its information systems to accompany the growth of parcel logistics, the diversification of services, and the increasing demand for real-time tracking and operational visibility.
-
-Despite these advancements, several components of the system remain legacy-oriented and primarily designed for operational execution rather than analytical exploitation. This characteristic has a direct impact on data accessibility and the ability to perform large-scale data-driven analysis.
+For the purposes of this work, particular attention was given to the systems involved in managing international mail flows and providing access to historical shipment information. The availability and structure of these data sources directly influenced the methodology adopted for data extraction and forecasting.
 
 === Digital Transformation Context
 
-Like many historical postal operators, Barid Al-Maghrib is engaged in a digital transformation process aimed at improving operational efficiency, enhancing customer experience, and enabling data-driven decision-making.
+Like many postal operators, Barid Al-Maghrib is progressively modernizing its information systems to support growing parcel volumes, improve shipment traceability, and facilitate operational monitoring.
 
-This transformation is driven by several factors:
+The increasing importance of e-commerce, customer expectations regarding tracking services, and the need for better planning tools have strengthened the role of data within postal activities. However, some operational applications remain primarily designed for day-to-day processing and consultation purposes, which limits their direct use for analytical studies.
 
-- Growth of e-commerce and parcel logistics;
-- Increasing demand for shipment traceability;
-- Need for real-time operational monitoring;
-- Expansion of digital financial services;
-- Pressure from private logistics competitors.
-
-According to international postal modernization frameworks, digital transformation in postal operators typically involves the integration of advanced information systems, automation of sorting processes, and adoption of analytics platforms for operational optimization @upu_digital.
-
-Within this context, BAM operates multiple internal systems that support different functional domains of postal operations.
+Within the framework of this internship, these constraints motivated the implementation of dedicated data engineering procedures to prepare datasets suitable for time-series analysis.
 
 === Système de Messagerie Intégré (SMI)
 
-The Système de Messagerie Intégré (SMI) is the core operational information system used by Barid Al-Maghrib to manage parcel and mail activities.
+The Système de Messagerie Intégré (SMI) is the main operational application used to manage postal items and record events associated with their processing.
 
-SMI is primarily designed to:
+SMI stores information related to shipments, including operational status updates generated during their lifecycle. Among the functionalities observed during the internship are:
 
-- Record shipment acceptance data;
-- Track operational events;
-- Manage sorting and routing operations;
-- Provide operational reporting interfaces;
-- Support customer service tracking queries.
+- Registration of shipment information;
+- Consultation of shipment histories;
+- Monitoring of sorting and dispatch activities;
+- Access to operational reports;
+- Support for shipment tracking requests.
 
-SMI plays a central role in the lifecycle of postal items, as it stores all key events associated with a shipment, including deposit, transit, sorting, dispatch, and delivery status updates.
+Since SMI was developed primarily to support operational activities, its functionalities for large-scale historical data extraction remain limited. During the internship, several constraints were identified:
 
-However, SMI is fundamentally an operational system (OLTP-oriented) and not designed for large-scale analytical workloads. As a result, data extraction for research or forecasting purposes presents several constraints:
+- Absence of a public API for automated access;
+- Restricted export capabilities;
+- Slow response times for extensive queries;
+- Interfaces mainly intended for manual consultation.
 
-- Absence of a documented public API;
-- Limited bulk export capabilities;
-- Performance degradation for large queries;
-- Interface designed for manual consultation;
-- Lack of structured historical datasets for analytics.
-
-These limitations significantly influenced the design of the data acquisition strategy used in this internship.
+These limitations influenced the data acquisition strategy adopted for the study.
 
 === Tracking and Event Management Systems
 
-Tracking systems within BAM provide visibility over the status of shipments throughout their lifecycle.
+Shipment tracking services provide visibility over the successive stages of postal processing.
 
-Each shipment is associated with a unique identifier that allows retrieval of operational events such as:
+Each shipment is associated with a unique identifier allowing access to events such as:
 
-- Acceptance at post office;
-- Sorting center processing;
-- Dispatch to destination hub;
-- Arrival at destination;
+- Acceptance at a post office;
+- Processing in sorting centers;
+- Dispatch toward destination countries;
+- Arrival at destination facilities;
 - Delivery or return status.
 
-Tracking data is generated as a sequence of timestamped events stored in operational logs.
+Tracking information is recorded as timestamped events that describe the progression of shipments through the postal network.
 
-While the tracking system enables customer-facing visibility, its backend is optimized for individual queries rather than batch processing. This makes large-scale extraction of historical tracking data technically challenging.
+Although these systems facilitate shipment monitoring, they are not optimized for extracting large historical datasets. Consequently, part of the information required for this study had to be collected through automated interactions with available interfaces.
 
-In this study, tracking information was retrieved indirectly through automated interaction with the web interface due to the absence of bulk export mechanisms.
+=== Reporting and Data Extraction
 
-=== Reporting and Data Extraction Layer
+Operational reporting tools are used within Barid Al-Maghrib to monitor postal activities and consult aggregated indicators.
 
-SMI provides a set of reporting interfaces used internally for operational monitoring and management decision-making.
-
-These reporting modules allow users to generate aggregated views of:
+These reports provide information such as:
 
 - Daily shipment volumes;
-- Destination breakdowns;
-- Agency-level performance;
-- Delivery status distributions;
-- Service-level statistics.
+- Distribution of shipments by destination;
+- Agency-level activity indicators;
+- Delivery status summaries.
 
-However, these reporting tools exhibit several structural limitations:
+During the internship, it was observed that these interfaces are mainly intended for consultation purposes and offer limited possibilities for automated data retrieval. In particular, some reports become difficult to exploit over long periods, and export functionalities do not always provide data in formats directly suitable for analytical processing.
 
-- Query execution time increases significantly for long time ranges;
-- Some reports become unstable beyond six months of data;
-- Outputs are primarily designed for visualization rather than structured data export;
-- No standardized API exists for automated extraction.
-
-As a result, data extraction for analytical purposes requires alternative methods such as browser automation and scraping-based approaches.
-
-This constraint directly motivated the development of a custom Robotic Process Automation (RPA) pipeline using Playwright for Python @playwright.
-
-=== Data Architecture and Operational Flow
-
-The operational data architecture of BAM can be conceptually described as a multi-layer system composed of:
-
-- Operational layer (SMI);
-- Tracking layer (event logs);
-- Reporting layer (web interfaces);
-- External exchange systems (international postal partners).
-
-At the core, SMI acts as the system of record for all postal events. Each operational action performed on a parcel generates a corresponding event entry, which is stored and later aggregated for reporting purposes.
-
-The absence of a unified analytical data warehouse means that historical data reconstruction often requires combining multiple sources, including:
-
-- Web reports;
-- Tracking HTML pages;
-- Exported CSV files;
-- Operational logs.
-
-This fragmented architecture increases the complexity of data engineering tasks and necessitates custom ETL pipelines for analytical use cases.
+To address these limitations, an automated extraction pipeline was developed using Playwright for Python @playwright. This approach enabled the collection of historical data while reducing manual interventions.
 
 === Data Engineering Constraints
 
-During this internship, several technical constraints were identified in the data acquisition process:
+Several technical challenges were encountered during the data collection phase, including:
 
-- Lack of API access for historical data;
-- Rate limiting and system instability for large queries;
-- HTML-based tracking pages not designed for structured extraction;
-- Session-based authentication requiring automation;
-- Inconsistent export formats across modules.
+- Lack of direct programmatic access to historical records;
+- Session-based authentication mechanisms;
+- Variability in export formats;
+- Instability when requesting large volumes of data.
 
-To overcome these constraints, a robust extraction pipeline was implemented using browser automation, retry mechanisms, and incremental data collection strategies.
+To overcome these issues, the extraction process incorporated:
 
-This pipeline ensured:
+- Browser automation techniques;
+- Retry mechanisms in case of failures;
+- Incremental collection procedures;
+- Intermediate storage of retrieved data.
 
-- Fault tolerance in case of session expiration;
-- Resume capability after interruptions;
-- Idempotent data collection;
-- Efficient storage of intermediate results.
-
-The final dataset was stored in compressed columnar formats (Parquet) to optimize analytical performance.
+The processed datasets were subsequently stored in Parquet format to facilitate downstream analytical tasks.
 
 === Role of Information Systems in This Study
 
-The information systems described above play a central role in this internship, as they constitute the primary source of raw operational data.
+The information systems described above constitute the main source of data used throughout this internship.
 
-The forecasting task developed in this study relies entirely on historical data extracted from SMI and associated tracking systems.
+Historical records extracted from SMI and associated reporting interfaces were used to reconstruct outgoing international mail flows and prepare datasets for forecasting models.
 
-In particular:
+More specifically, these systems provided:
 
-- SMI provides shipment-level operational events;
-- Tracking systems provide lifecycle state transitions;
-- Reporting systems provide aggregated validation metrics.
+- Shipment-related operational information;
+- Timestamped processing events;
+- Aggregated indicators used for validation and exploratory analysis.
 
-The combination of these sources enables the reconstruction of historical international mail flows, which are then used for time-series modeling and forecasting.
-
-This dependency highlights the importance of understanding legacy information systems when designing data-driven analytical solutions in operational environments.
+The availability and quality of these data sources had a direct impact on the design of the preprocessing pipeline and the forecasting methodology presented in the following chapters.
 
 === Summary
 
-Barid Al-Maghrib's information systems form a complex ecosystem combining operational processing systems, tracking infrastructures, and reporting tools.
+The information systems used within Barid Al-Maghrib ensure the execution and monitoring of postal activities on a daily basis. From the perspective of this internship, they also represent the primary source of historical information required for forecasting outgoing international mail volumes.
 
-While these systems ensure reliable day-to-day postal operations, their architecture is not fully optimized for analytical exploitation. This creates significant challenges for large-scale data extraction and forecasting applications.
-
-The methodological approach adopted in this internship was therefore designed to bridge the gap between operational systems and analytical requirements through automation, data engineering, and structured preprocessing pipelines.
+Because these systems were designed mainly for operational use, additional extraction, preprocessing, and automation steps were necessary to build datasets suitable for analytical modeling. The methodology adopted during the internship was therefore intended to bridge the gap between operational data sources and the requirements of time-series forecasting models.

@@ -11,5 +11,10 @@
 
   "chapter": "Chapter",
   "defended_on_pre_date": "Defended on",
-  "defended_on_post_date": "in front of the jury composed of"
+  "defended_on_post_date": "in front of the jury composed of",
+
+  "dedication": "Dedication",
+  "acknowledgments": "Acknowledgments",
+  "abstract": "Abstract",
+  "abbreviations": "List of Abbreviations"
 }

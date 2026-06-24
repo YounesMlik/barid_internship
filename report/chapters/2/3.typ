@@ -1,6 +1,5 @@
 #import "@preview/fletcher:0.5.8" as fletcher: diagram, edge, node, shapes
 
-== Web Scraping and Automation Pipeline
 
 The absence of a formal application programming interface (API) for data extraction from Barid Al-Maghrib’s operational systems necessitated the design of a custom web automation pipeline. This pipeline is responsible for extracting structured data from web-based interfaces that were originally designed for human interaction rather than machine-to-machine communication.
 
