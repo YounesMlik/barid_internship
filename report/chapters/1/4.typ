@@ -1,106 +1,98 @@
-This internship was carried out within Barid Al-Maghrib (BAM) as part of the requirements for completing an engineering degree. The work focused on the analysis and forecasting of outgoing international mail volumes using historical operational data extracted from the information systems used within the institution.
+This internship was carried out within Barid Al-Maghrib as part of an engineering degree program. The work focused on the analysis and forecasting of outgoing international mail volumes using historical operational data extracted from internal information systems.
 
-The internship provided an opportunity to apply data engineering, exploratory analysis, and time-series forecasting techniques to a real operational use case while taking into account the constraints imposed by existing information systems.
+The project sits at the intersection of data engineering and applied forecasting. It required both the construction of usable datasets from operational systems and the development of predictive models adapted to the structure and limitations of the available data.
 
-=== Industrial Context of the Internship
+=== Industrial Context
 
-International postal activities represent an important operational domain for Barid Al-Maghrib due to the increasing volume of cross-border exchanges associated with e-commerce and shipments exchanged with Moroccan communities residing abroad.
+International mail represents a structurally important activity for Barid Al-Maghrib due to the continuous growth of cross-border exchanges. This growth is mainly driven by e-commerce and the volume of shipments linked to Moroccan communities abroad.
 
-Efficient management of these flows requires anticipating variations in shipment volumes in order to improve transportation planning, optimize resource allocation, and maintain service quality.
+In this context, anticipating shipment volumes becomes relevant for operational planning. Variations in demand directly affect transport organization, sorting capacity, and workforce allocation.
 
-Within this context, forecasting outgoing international mail volumes constitutes a relevant decision-support problem, particularly during periods characterized by significant demand fluctuations.
+The forecasting problem addressed in this internship is therefore not purely analytical; it is tied to practical operational needs related to planning and resource management.
 
-=== Internship Department and Environment
+=== Working Environment
 
-The internship was conducted in an environment closely related to the management and exploitation of postal operational data.
+The internship was conducted in an environment strongly centered on operational systems. These systems are designed primarily to support shipment processing and tracking rather than analytical exploration.
 
-Several characteristics of the working environment influenced the organization of the project:
+Several characteristics of this environment shaped the work:
 
-- Use of operational information systems initially designed for transaction processing;
-- Distribution of information across multiple interfaces;
-- Limited availability of analytical tools;
-- Dependence on reporting modules for historical consultations;
-- Constraints related to data extraction and long query execution times.
+- Data is distributed across multiple interfaces rather than centralized;
+- Historical access is limited and often constrained by performance issues;
+- Extraction functionalities are designed for manual consultation;
+- Reporting tools are oriented toward operational monitoring rather than analysis.
 
-A significant part of the internship was therefore dedicated to acquiring, consolidating, and preparing historical data before applying forecasting techniques.
+As a result, a significant portion of the internship was dedicated to making the data usable for analytical purposes before any modeling could be performed.
 
 === Internship Mission
 
-The objectives assigned during the internship can be summarized as follows:
+The main objectives of the internship can be summarized as follows:
 
-- Study historical outgoing international mail flows;
-- Extract and consolidate data from available operational systems;
-- Develop an automated collection pipeline;
-- Perform exploratory analysis to identify trends, seasonality, and anomalies;
-- Implement forecasting models;
-- Evaluate forecasting performance using statistical indicators.
+- Reconstruct historical datasets from operational systems;
+- Develop automated procedures for data extraction;
+- Clean and structure raw shipment and tracking data;
+- Analyze temporal patterns in outgoing international mail flows;
+- Build and evaluate forecasting models;
+- Compare statistical, machine learning, and deep learning approaches.
 
-The overall objective was to assess the feasibility of predicting shipment volumes from historical observations and to provide tools that could support operational planning activities.
+These objectives were pursued in an iterative manner, where data preparation and modeling informed each other.
 
-=== Tools and Technologies Used
+=== Tools and Technologies
 
-Several technologies were used during the internship for data extraction, processing, and analysis.
-
-The main tools employed include:
+The internship relied on a set of tools chosen to handle both data extraction and time-series analysis tasks:
 
 - Python for data processing and model implementation;
-- Playwright for browser automation and data extraction @playwright;
-- Pandas for data manipulation and preprocessing;
-- Apache Parquet for efficient storage of processed datasets;
-- Time-series analysis and forecasting libraries;
-- Notebook-based environments for experimentation and model evaluation.
+- Playwright for automated extraction from web-based systems @playwright;
+- Data manipulation libraries for cleaning and transformation tasks;
+- Columnar storage formats (Parquet) for efficient handling of large datasets;
+- Standard time-series forecasting frameworks for model evaluation.
 
-These technologies were selected because they allowed the automation of repetitive tasks and facilitated the handling of large historical datasets.
+No dedicated dashboarding or business intelligence layer was used in the scope of this work, as the focus remained on dataset construction and modeling rather than deployment.
 
-=== Data Context and Availability
+=== Data Context
 
-The data used during the internship originated primarily from the Système de Messagerie Intégré (SMI) and associated reporting interfaces.
+The datasets used in this internship originate mainly from the Système de Messagerie Intégré (SMI) and related operational reporting interfaces.
 
-The collected information included:
+They include information such as:
 
 - Shipment acceptance dates;
 - Destination countries;
+- Processing and tracking events;
 - Operational status updates;
-- Routing information;
-- Additional attributes useful for exploratory analysis.
+- Additional attributes used for exploratory analysis.
 
-Several constraints were encountered during the data acquisition phase, including:
+Access to these data sources was constrained by several limitations:
 
-- Limited export functionalities;
-- Absence of direct programmatic access;
-- Variability in historical coverage;
-- Performance limitations when querying large time intervals.
+- Lack of direct programmatic access;
+- Limited export capabilities;
+- Performance issues over long time intervals;
+- Inconsistent historical coverage across modules.
 
-These constraints required the implementation of preprocessing procedures and automated extraction mechanisms to obtain datasets suitable for time-series modeling.
+To address these constraints, an extraction pipeline was developed to progressively collect, consolidate, and structure the data into analyzable formats.
 
-=== Position of the Internship within BAM Activities
+=== Position of the Internship
 
-The internship is directly related to the exploitation of operational postal data for analytical purposes.
+Within Barid Al-Maghrib, this work is positioned as an exploratory analytical effort aimed at reusing operational data for forecasting purposes.
 
-While existing systems mainly support the execution and monitoring of postal activities, the work carried out during the internship aimed to reuse historical data in order to study shipment dynamics and evaluate forecasting approaches.
+Rather than modifying existing systems, the internship focuses on extracting value from existing infrastructure by transforming operational records into structured time series.
 
-The project therefore contributes to:
+This approach highlights the potential of internal data for supporting planning activities, even when systems were not originally designed for analytical use.
 
-- Structuring historical operational datasets;
-- Facilitating quantitative analysis of international mail flows;
-- Providing indicators that may assist planning activities;
-- Demonstrating the potential of predictive methods applied to postal operations.
+=== Contribution
 
-=== Contributions of the Internship
-
-The work performed during the internship resulted in the development of a workflow covering the different stages required for postal flow forecasting.
+The main contribution of the internship lies in the development of a complete workflow that connects operational systems to forecasting models.
 
 This workflow includes:
 
-- Automated data collection;
-- Data cleaning and preparation;
-- Exploratory analysis of historical trends;
-- Development and evaluation of forecasting models.
+- Automated extraction of shipment data from operational interfaces;
+- Transformation and cleaning of raw records;
+- Construction of consistent time series;
+- Application of multiple forecasting approaches;
+- Evaluation of predictive performance across models.
 
-Beyond the forecasting results themselves, the internship also highlighted the importance of data engineering activities when working with operational information systems that were not originally designed for analytical use.
+The resulting pipeline demonstrates how operational postal data can be repurposed for analytical and predictive tasks, despite the constraints of legacy information systems.
 
 === Summary
 
-This internship was conducted in an operational environment where information system constraints significantly influenced data availability and accessibility.
+This internship is situated in a context where operational information systems impose significant constraints on data access and analysis.
 
-Despite these limitations, the project made it possible to apply data engineering and time-series forecasting techniques to real postal data and to assess their potential contribution to improving the analysis and anticipation of outgoing international mail volumes.
+Despite these limitations, it was possible to construct structured datasets and apply forecasting techniques to outgoing international mail volumes, providing a basis for better understanding and anticipating shipment dynamics.

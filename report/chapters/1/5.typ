@@ -1,107 +1,97 @@
-The work carried out during this internship addresses the problem of forecasting outgoing international mail volumes using historical data available within Barid Al-Maghrib.
+The work carried out during this internship addresses the problem of forecasting outgoing international mail volumes using historical operational data from Barid Al-Maghrib.
 
-Although operational information systems provide access to shipment information and activity reports, they are mainly designed to support day-to-day postal operations and shipment monitoring. Their functionalities for historical analysis and predictive modeling remain limited, which makes the direct use of operational data for forecasting purposes difficult.
+Although operational information systems provide access to shipment tracking and reporting functionalities, they are primarily designed for transaction processing and operational monitoring. As a result, they offer limited support for historical analysis and almost no direct capabilities for predictive modeling. This creates a gap between available data and its analytical usability.
 
-Consequently, an important part of the internship consisted of transforming data extracted from operational systems into datasets suitable for statistical analysis and forecasting.
+Bridging this gap requires transforming operational records into structured datasets suitable for time-series analysis. This involves extracting data from heterogeneous systems, cleaning and consolidating it, and reconstructing consistent temporal series that can be used for forecasting models.
 
 === Operational Need for Forecasting
 
-Outgoing international mail volumes exhibit noticeable variations over time. Exploratory analyses performed during the internship highlighted recurring patterns and seasonal effects, including increases in activity observed during periods preceding Ramadan.
+Outgoing international mail volumes are characterized by strong variability over time. Exploratory analysis conducted during this internship revealed recurring seasonal patterns, particularly increases in activity during periods preceding Ramadan. These variations reflect both cultural and commercial dynamics affecting postal demand.
 
-Other factors may also influence shipment volumes, such as:
+Several external factors also contribute to fluctuations in shipment volumes:
 
-- E-commerce activity;
-- International transportation constraints;
-- Customs processing delays;
-- Variations in demand associated with Moroccan communities residing abroad.
+- Growth of e-commerce and cross-border purchases;
+- Variations in international transport capacity;
+- Customs processing delays in destination countries;
+- Seasonal migration and exchanges with Moroccan communities abroad.
 
-Anticipating these fluctuations can be useful for operational activities related to transportation planning, workload estimation, and resource allocation.
-
-Forecasting tools can therefore provide additional information to support planning decisions and improve visibility over future shipment volumes.
+From an operational perspective, these variations directly affect workload planning, transport scheduling, and resource allocation. Being able to anticipate such changes is therefore valuable for improving operational efficiency.
 
 === Data-Related Constraints
 
-One of the main challenges encountered during the internship was related to data availability and accessibility.
+A major difficulty encountered during the internship concerns data accessibility.
 
-Several constraints were identified:
+The main limitations include:
 
-- Limited possibilities for exporting historical data;
-- Absence of direct programmatic access to some sources;
-- Dependence on reporting interfaces designed primarily for consultation;
-- Performance degradation when querying long time intervals;
-- Variations in data completeness across different modules.
+- Restricted export capabilities from operational systems;
+- Absence of direct APIs for historical extraction;
+- Dependence on interfaces designed for manual consultation;
+- Performance degradation when querying long time periods;
+- Inconsistent coverage across different system modules.
 
-As a result, obtaining a usable historical dataset required several preprocessing steps, including:
-
-- Automated extraction procedures;
-- Consolidation of data originating from multiple interfaces;
-- Cleaning and validation operations;
-- Transformation into formats adapted to analytical processing.
-
-These tasks represented a significant component of the work carried out during the internship.
+Because of these constraints, constructing a usable dataset required significant preprocessing effort. This included automated extraction procedures, consolidation of multiple data sources, and data cleaning operations to ensure consistency and reliability.
 
 === Analytical Gap
 
-Operational systems provide detailed information regarding the processing and tracking of shipments. However, they do not directly offer functionalities for estimating future shipment volumes.
+Operational systems provide detailed transactional visibility but do not directly support forecasting tasks. They answer the question of what happened, but not what is likely to happen next.
 
-Bridging this gap requires:
+The analytical gap can be summarized as follows:
 
-- Reconstructing historical time series from operational records;
-- Managing incomplete or inconsistent observations;
-- Selecting forecasting methods appropriate for the characteristics of the data;
-- Evaluating the predictive performance of different approaches.
+- Historical data exists but is fragmented across systems;
+- Time series must be reconstructed from event-level records;
+- Data quality issues must be addressed before modeling;
+- Forecasting requires aggregation and temporal alignment that are not provided natively.
 
-The objective is not to replace existing operational tools but rather to investigate how historical data can be reused to support short-term forecasting activities.
+The objective of this work is not to replace operational systems, but to reuse their data for analytical purposes.
 
 === Problem Formulation
 
-From a modeling perspective, the problem addressed during this internship can be formulated as a time-series forecasting task.
+The forecasting problem can be formulated as a univariate time-series prediction task.
 
-Let:
+Let $y_t$ denote the observed volume of outgoing international mail at time $t$, and let $h$ represent the forecasting horizon. The goal is to estimate future values $y_{t+h}$ based on historical observations.
 
-- $y_t$ represent the observed volume of outgoing international shipments at time $t$;
-- $h$ represent the forecasting horizon.
+This can be expressed as:
 
-The objective is to estimate future values according to:
+$
+hat(y)_(t+h) = f(y_t, y_(t-1), ..., y_(t-n))
+$
 
-$ hat(y)*(t+h) = f(y_t, y*(t-1), ..., y_(t-n)) $
+where $f$ is a forecasting function learned from past data.
 
-where $f$ denotes a forecasting model learned from historical observations.
+The problem is made more challenging by several characteristics of the data:
 
-Several characteristics of the data make this task challenging, including:
+- Seasonal patterns and periodic fluctuations;
+- Irregularities and missing observations;
+- Structural changes in shipment volumes over time;
+- Increased uncertainty for longer forecasting horizons.
 
-- Seasonal variations;
-- Missing or incomplete observations;
-- Changes in shipment volumes over time;
-- Uncertainty associated with long-term predictions.
-
-Within the scope of this internship, particular attention was given to short-term forecasts intended to support operational analyses.
+In this study, emphasis is placed on short-term forecasting, as it is most relevant for operational planning.
 
 === Objectives of the Study
 
-The objectives pursued during the internship are summarized as follows:
+The objectives of this internship are as follows:
 
-- Build a consistent historical dataset from operational sources;
-- Analyze temporal patterns in outgoing international mail volumes;
-- Implement and compare forecasting models;
-- Evaluate forecasting accuracy using statistical indicators;
-- Assess the potential usefulness of forecasting techniques for operational planning.
+- Construct a consistent historical dataset from operational sources;
+- Analyze temporal patterns in outgoing international mail flows;
+- Develop and compare forecasting models;
+- Evaluate model performance using statistical metrics;
+- Assess the operational relevance of forecasting outputs.
 
-These objectives aim to demonstrate how historical postal data can be transformed into analytical information that supports decision-making activities.
+These objectives aim to demonstrate how operational postal data can be transformed into actionable analytical information.
 
 === Expected Outcome
 
-The expected outcome of this work is the development of a workflow integrating:
+The expected outcome is the development of a complete analytical workflow covering:
 
-- Automated data collection;
-- Data preprocessing procedures;
-- Forecast generation;
-- Performance evaluation.
+- Data extraction and consolidation;
+- Data preprocessing and transformation;
+- Forecast generation using multiple modeling approaches;
+- Evaluation of predictive performance.
 
-Beyond the forecasting results themselves, the study also aims to provide a reproducible methodology for exploiting operational postal data in analytical applications.
+Beyond the numerical results, the goal is to establish a reproducible methodology for exploiting operational postal data in a forecasting context.
 
 === Summary
 
-The problem addressed during this internship stems from the difficulty of directly using operational postal data for forecasting purposes.
+The problem addressed in this internship arises from the mismatch between operational data systems and analytical requirements.
 
-By combining data extraction, preprocessing, exploratory analysis, and time-series modeling, the internship investigates the feasibility of producing short-term forecasts of outgoing international mail volumes and evaluates their potential contribution to operational planning activities within Barid Al-Maghrib.
+By combining data engineering and time-series forecasting techniques, this work investigates the feasibility of predicting outgoing international mail volumes and their potential value for supporting operational decision-making within Barid Al-Maghrib.

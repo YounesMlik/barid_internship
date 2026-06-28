@@ -1,57 +1,20 @@
-#heading(level: 2, numbering: none)[Context]
+Barid Al-Maghrib (BAM) is the national postal operator of Morocco and plays a central role in the provision of postal, logistics, financial, and digital services throughout the country. Through its extensive network and international partnerships, the organization manages large volumes of mail and parcel flows whose efficient handling is essential to maintaining service quality and operational performance.
 
-The postal sector has undergone significant changes over the last decade. The rapid growth of electronic commerce, the increasing expectations of customers regarding delivery times, and the widespread adoption of digital technologies have considerably transformed postal activities worldwide. Postal operators are now required to handle larger and more volatile parcel volumes while maintaining high levels of service quality and operational efficiency.
+Like many historical postal operators, BAM is currently engaged in a digital transformation process aimed at improving operational efficiency, increasing shipment traceability, and progressively adopting data-driven decision-making practices. Despite the availability of significant amounts of operational data, existing information systems remain primarily designed for transaction processing, shipment tracking, and operational reporting. Consequently, forecasting capabilities are not natively integrated into these systems, limiting the ability to anticipate future demand and support proactive planning activities.
 
-In Morocco, Barid Al-Maghrib (BAM) is the public operator responsible for providing postal services throughout the national territory and ensuring exchanges with international postal networks. In addition to traditional mail services, BAM manages a large volume of domestic and international parcels through its operational and logistics infrastructure. Among these activities, outgoing international mail represents an important segment due to its direct dependence on customer demand, commercial exchanges, seasonal events, and the mobility of the Moroccan diaspora.
+This internship was carried out within BAM as part of the requirements for obtaining an engineering degree. A previous internship experience within the organization provided an initial exposure to its operational environment and information systems. This experience, combined with an interest in data engineering and predictive analytics, motivated the decision to pursue a second internship within the same institution and to address a more technically challenging problem involving large-scale data extraction and forecasting.
 
-The management of these flows relies on several information systems that support operational activities such as shipment registration, tracking, routing, and reporting. Although these systems contain a significant amount of historical information, they were primarily designed to facilitate day-to-day operations and not to support analytical studies or forecasting tasks. Consequently, exploiting these data for decision-making purposes requires substantial efforts in terms of extraction, cleaning, and transformation.
+The central problem addressed in this internship is the absence of a forecasting framework capable of exploiting historical operational data to anticipate outgoing international mail volumes over short planning horizons. Existing planning activities rely mainly on descriptive reports and historical observations, making it difficult to proactively allocate resources, anticipate workload fluctuations, and optimize logistics operations.
 
-It is within this context that this internship was carried out at Barid Al-Maghrib, with a particular focus on the analysis and forecasting of Morocco's outgoing international mail flows.
+The objective of this work is therefore to design and implement an end-to-end forecasting pipeline adapted to the constraints of BAM's information systems. More specifically, the study aims to:
 
+- reconstruct historical shipment series from operational systems;
+- develop a reproducible data preparation workflow;
+- investigate statistical, machine learning, and deep learning forecasting approaches;
+- evaluate forecasting performance using rolling-origin cross-validation;
+- generate coherent forecasts across multiple aggregation levels through hierarchical reconciliation;
+- provide an interactive visualization interface enabling users to explore and compare forecasting results.
 
-#heading(level: 2, numbering: none)[Motivation]
+More broadly, this internship seeks to demonstrate how modern data engineering practices and time-series forecasting techniques can be leveraged to bridge the gap between legacy operational information systems and data-driven decision-support tools.
 
-This internship was chosen because it provides an opportunity to apply concepts acquired during the academic curriculum in a real industrial environment while addressing a practical problem faced by a national public institution.
-
-The project combines several areas covered during the training program, including data engineering, automation, statistical analysis, machine learning, time series forecasting, and web application development. It also offers the possibility of working with large operational datasets, understanding the constraints associated with legacy information systems, and developing solutions that may support operational decision-making.
-
-Furthermore, conducting the internship within Barid Al-Maghrib allowed for gaining insight into the functioning of postal logistics processes and understanding the challenges related to the digital transformation initiatives currently undertaken by the institution.
-
-
-#heading(level: 2, numbering: none)[Problem Statement]
-
-Anticipating future international mail volumes is important for improving transportation planning, optimizing resource allocation, and ensuring the continuity of postal services. However, producing reliable forecasts requires access to historical operational data that accurately describe the evolution of postal activity over time.
-
-At Barid Al-Maghrib, obtaining such data presents several difficulties. The operational information systems do not provide documented programming interfaces, some reporting modules become unstable when queried over extended periods, and shipment tracking information is only accessible through interfaces intended for individual consultations. As a result, collecting and consolidating the information necessary for forecasting cannot be achieved using conventional analytical workflows.
-
-The problem addressed during this internship can therefore be formulated as follows:
-
-How can the operational data available within Barid Al-Maghrib be automatically collected, processed, and exploited to build reliable forecasting models capable of predicting Morocco's outgoing international mail activity and providing useful indicators for operational planning?
-
-Addressing this question involves not only selecting appropriate forecasting techniques but also overcoming the challenges associated with data acquisition, preparation, and validation.
-
-
-#heading(level: 2, numbering: none)[Objectives]
-
-The main objective of this internship is to develop a data-driven framework for analyzing and forecasting Morocco's outgoing international mail flows.
-
-More specifically, the work aims to:
-
-- Study the organizational environment of Barid Al-Maghrib and its international postal activities.
-- Identify the data sources relevant to the forecasting task.
-- Design automated procedures for extracting information from existing information systems.
-- Build analytical datasets by cleaning, validating, and consolidating the collected data.
-- Explore historical trends and identify the main characteristics of outgoing international mail traffic.
-- Implement and compare several time series forecasting methods.
-Evaluate forecasting performance using rolling cross-validation techniques and suitable accuracy metrics.
-- Estimate forecast uncertainty through prediction intervals.
-- Develop a lightweight web-based interface to facilitate the consultation of historical data, forecasts, and selected performance indicators.
-Report Outline
-
-This report is organized into three chapters.
-
-The first chapter presents the host institution and the context of the internship. It introduces Barid Al-Maghrib, describes its international mail activities and information systems, and formulates the problem addressed during the internship.
-
-The second chapter details the methodology adopted throughout the study. It presents the data collection strategy, preprocessing procedures, exploratory analyses, forecasting methods, model evaluation techniques, and the design choices associated with the proposed decision-support interface.
-
-The third chapter focuses on the realization of the project. It describes the implementation of the automated data acquisition pipeline, the construction of forecasting datasets, the obtained forecasting results, and the development of the web application intended to visualize historical trends, future estimates, and operational indicators.
+The remainder of this report is organized as follows. @chapter_host_institution introduces Barid Al-Maghrib, its international mail activities, information systems, and the internship context. @chapter_methodology presents the methodology adopted in this study following an adaptation of the CRISP-DM framework to the postal forecasting problem, covering data preparation, model development, evaluation procedures, and operationalization aspects. @chapter_realization describes the implementation of the proposed solution, discusses the experimental results, and presents the interactive visualization system developed to facilitate forecast exploration and support operational decision-making.

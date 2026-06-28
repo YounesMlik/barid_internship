@@ -1,9 +1,11 @@
 #import "@preview/headcount:0.1.1": *
 
 #let IMAGE_BOX_MAX_WIDTH = 120pt
-#let IMAGE_BOX_MAX_HEIGHT = 50pt
+#let IMAGE_BOX_MAX_HEIGHT = 60pt
 
 #let supported-langs = ("en", "fr", "ar")
+
+#let current-heading-numbering = state("heading-numbering", none)
 
 
 #let cover-page(
@@ -47,7 +49,7 @@
       ]
     }
     #line(length: 100%, stroke: 0.5pt)
-    #text(size: 20pt, weight: "bold")[#title]
+    #text(size: 25pt, weight: "bold")[#title]
     #line(length: 100%, stroke: 0.5pt)
   ]
 
@@ -173,66 +175,94 @@
 
   set page(header: context {
     let headings = query(heading.where(level: 1).before(here()))
+
+    if headings == () {
+      return []
+    }
+
     let current-page-headings = query(heading.where(level: 1).after(here())).filter(h => (
       h.location().page() == here().page()
     ))
-    if headings == () {
-      []
-    } else {
-      let current-chapter = headings.last()
-      if current-chapter.level == 1 and current-chapter.numbering != none {
-        let in-page-heading = if current-page-headings.len() > 0 { current-page-headings.first() } else { none }
-        if in-page-heading == none or in-page-heading.level != 1 or in-page-heading.numbering == none {
-          let count = counter(heading).at(current-chapter.location()).at(0)
-          align(end)[
-            #text(accent-color, weight: "bold")[
-              #dict.chapter #count:
-            ]
-            #current-chapter.body
-            #line(length: 100%)
-          ]
-        }
+
+    let current-chapter = headings.last()
+
+    if current-chapter.numbering != none {
+      let in-page-heading = current-page-headings.first(default: none)
+
+      if in-page-heading == none or in-page-heading.numbering == none {
+        let count = numbering(
+          current-chapter.numbering,
+          ..counter(heading).at(current-chapter.location()),
+        )
+
+        align(end)[
+          *#current-chapter.supplement #count:* #current-chapter.body
+          #line(length: 100%)
+        ]
       }
     }
   }) if features.contains("header-chapter-name")
 
   set text(lang: lang, size: 12pt)
   set par(justify: true)
-  set heading(numbering: heading-numbering)
 
-  set figure(numbering: dependent-numbering("1.1")) // chapter dependant numbering
+  set heading(numbering: heading-numbering, supplement: h => {
+    let depth = h.at("depth", default: 1)
+    if depth == 1 {
+      dict.chapter
+    } else {
+      dict.section
+    }
+  })
+  current-heading-numbering.update(heading-numbering)
+
+  set figure(
+    numbering: nums => {
+      dependent-numbering(current-heading-numbering.get())(nums)
+    },
+  ) // chapter dependant numbering
+
   set figure.caption(separator: " - ")
   show figure.where(kind: image): set figure.caption(position: bottom)
-  show figure.where(kind: table): set figure.caption(position: top)
+  
   show figure.where(kind: table): it => {
+    set block(breakable: true)
+    set figure.caption(position: top)
     show figure.caption: strong
     it
   }
+  show table.cell.where(y: 0): strong
 
   show heading: it => {
     if it.level == 1 {
       pagebreak(weak: true)
-    }
-    if it.level == 1 and it.numbering != none {
-      if features.contains("full-page-chapter-title") {
-        set page(footer: none)
+      counter(figure.where(kind: image)).update(0)
+      counter(figure.where(kind: table)).update(0)
+      if it.numbering != none {
+        if features.contains("full-page-chapter-title") {
+          set page(footer: none)
 
-        align(horizon)[
-          #text(weight: "regular", size: 30pt)[
-            #dict.chapter #counter(heading).display()
+          align(horizon)[
+            #text(weight: "regular", size: 30pt)[
+              #it.supplement #counter(heading).display()
+            ]
+            #linebreak()
+            #text(weight: "bold", size: 36pt)[
+              #it.body
+            ]
+            #line(start: (0%, -1%), end: (15%, -1%), stroke: 2pt + accent-color)
           ]
-          #linebreak()
-          #text(weight: "bold", size: 36pt)[
-            #it.body
-          ]
-          #line(start: (0%, -1%), end: (15%, -1%), stroke: 2pt + accent-color)
-        ]
 
-        pagebreak()
+          pagebreak()
+        } else {
+          v(40pt)
+          text(size: 30pt)[#it.supplement #counter(heading).display() #linebreak() #it.body ]
+          v(60pt)
+        }
       } else {
-        v(40pt)
-        text(size: 30pt)[#dict.chapter #counter(heading).display() #linebreak() #it.body ]
-        v(60pt)
+        v(5pt)
+        text(size: 30pt)[#it]
+        v(12pt)
       }
     } else {
       v(5pt)
@@ -322,7 +352,10 @@
   }
 
   // Table of contents (v)
-  outline(depth: 3, indent: auto)
+  outline(
+    depth: 3,
+    indent: 1.5em,
+  )
 
   // List of abbreviations (vi)
   if abbreviations != none {
@@ -344,10 +377,31 @@
     target: figure.where(kind: table),
   )
 
-  counter(page).update(1)
+  pagebreak()
+
   set page(numbering: "1")
+  counter(page).update(1)
 
   // Main body.
   body
 }
 
+#let appendices = body => {
+  counter(heading).update(0)
+
+  set heading(
+    numbering: (..nums) => {
+      let levels = nums.pos()
+      if levels.len() == 1 {
+        "Appendix " + numbering("A", ..nums)
+      } else {
+        numbering("A.1", ..nums)
+      }
+    },
+    supplement: [],
+  )
+
+  current-heading-numbering.update("A.1")
+
+  body
+}

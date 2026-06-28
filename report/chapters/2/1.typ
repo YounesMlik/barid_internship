@@ -1,90 +1,69 @@
-The methodological framework adopted in this internship is designed to address the challenges associated with extracting, structuring, and forecasting operational data from legacy postal information systems. Given the absence of a dedicated analytical infrastructure, the approach combines data engineering techniques, web automation, and statistical forecasting methods into a unified pipeline.
+#import "@preview/mmdr:0.2.2": mermaid
 
-The overall methodology follows a structured data-driven process composed of four main stages:
+The methodology adopted in this internship is structured according to the CRISP-DM (Cross-Industry Standard Process for Data Mining) framework @crispdm, which remains one of the most widely used reference models for data science and machine learning projects in industrial contexts.
 
-- Data acquisition from heterogeneous operational sources;
-- Data preprocessing and transformation;
-- Time series modeling and forecasting;
-- Model evaluation and validation.
+CRISP-DM defines a cyclical process composed of six phases: Business Understanding, Data Understanding, Data Preparation, Modeling, Evaluation, and Deployment. While this structure is general-purpose, it is particularly well suited for projects involving heterogeneous data sources and iterative model development, which is the case for hierarchical forecasting of postal flows at Barid Al-Maghrib.
 
-This structured approach ensures traceability, reproducibility, and consistency across all stages of the analysis.
+However, in this internship, CRISP-DM is not applied in a strictly sequential manner. Instead, it is adapted into a more engineering-oriented pipeline that reflects the operational constraints of postal information systems and the iterative nature of model development. In particular, the separation between modeling and evaluation is iterative, as multiple forecasting paradigms are tested and compared continuously.
 
-=== Objectives of the Methodological Framework
 
-The primary objective of the methodology is to transform raw operational data into actionable forecasts that can support decision-making in the context of international mail logistics.
+#figure(
+  mermaid(
+    "flowchart TD
 
-More specifically, the methodological framework aims to:
+%% =======================
+%% CRISP-DM Adapted Pipeline
+%% Global Forecasting System
+%% =======================
 
-- Extract reliable historical data from operational systems (SMI and tracking interfaces);
-- Clean and standardize heterogeneous datasets;
-- Construct coherent time series representing postal activity;
-- Apply and compare multiple forecasting models;
-- Evaluate predictive performance using robust statistical metrics.
+subgraph D[Data Understanding]
+A[Raw SMI data]
+end
 
-This aligns with standard data science pipelines for operational forecasting, where raw transactional data is progressively transformed into structured analytical inputs @hyndman_forecasting.
+subgraph P[Data Preparation]
+B[Weekly aggregation<br/>(Polars pipeline)]
+C[Hierarchical structure<br/>(S_df / tags)]
+D1[Feature engineering<br/>(trend + lags)]
+end
 
-=== Overall Pipeline Overview
+subgraph M[Modeling]
+E1[StatsForecast]
+E2[MLForecast]
+E3[NeuralForecast]
+F[Top-down reconciliation layer]
+end
 
-The methodological pipeline adopted in this study can be conceptually described as a sequential transformation process:
+subgraph E[Evaluation]
+G[Cross-validation]
+H[Metrics computation]
+end
 
-Raw Operational Systems → Data Extraction → Data Cleaning → Feature Engineering → Forecasting Models → Evaluation
+subgraph Dp[Deployment]
+I[Altair dashboard]
+end
 
-Each stage plays a distinct role:
+%% Flow
+A --> B --> C --> D1
 
-- Data Extraction: retrieves raw information from SMI reports, tracking systems, and web interfaces;
-- Data Cleaning: removes inconsistencies, duplicates, and invalid records;
-- Feature Engineering: constructs aggregated time series and relevant explanatory variables;
-- Forecasting Models: generate predictions using statistical and machine learning approaches;
-- Evaluation: measures predictive accuracy using rolling-origin validation.
+D1 --> E1
+D1 --> E2
+D1 --> E3
 
-This pipeline ensures that each transformation step is explicitly controlled and reproducible, which is essential when working with legacy and heterogeneous systems @upuprocesses.
+E1 --> F
+E2 --> F
+E3 --> F
 
-=== Design Principles
+F --> G --> H --> I",
+  ),
+  caption: [Global architecture of the forecasting pipeline adapted from CRISP-DM.],
+) <fig-pipeline-overview>
 
-The methodological design is guided by three main principles:
+@fig-pipeline-overview illustrates the global architecture of the forecasting system implemented in this internship. The pipeline begins with raw operational data extracted from Barid Al-Maghrib’s information systems and proceeds through a structured transformation process.
 
-==== Robustness
+The first stage corresponds to data preparation, where weekly aggregation and hierarchical structuring are performed. This step is essential because the original data is not directly available in an analytical format and must be reconstructed into consistent time series.
 
-Given the instability of legacy systems and web-based interfaces, the data extraction process must be resilient to interruptions such as session expiration, network failures, and server timeouts. Robust retry mechanisms and checkpointing strategies are therefore integrated into the pipeline.
+The second stage introduces feature engineering, where both shared and model-specific features are generated. A key element is the trend component, which is consistently used across machine learning and neural forecasting models, ensuring comparability between different model families.
 
-==== Reproducibility
+The third stage represents the modeling layer, where three distinct paradigms are applied: statistical models (StatsForecast), machine learning models (MLForecast), and deep learning models (NeuralForecast). This multi-paradigm design allows the comparison of fundamentally different forecasting approaches under a unified framework.
 
-All data processing steps are designed to be reproducible. This includes:
-
-- Deterministic extraction procedures;
-- Versioned intermediate datasets;
-- Structured storage using columnar formats (Parquet);
-- Script-based automation of all transformations.
-
-Reproducibility ensures that results can be independently verified and updated when new data becomes available.
-
-==== Scalability
-
-The volume of data involved (hundreds of thousands of parcels and millions of operational events) requires scalable processing techniques. To address this, the pipeline relies on:
-
-- Batch processing strategies;
-- Efficient data formats (Parquet compression);
-- Chunked data extraction to avoid system overload;
-- Vectorized operations during preprocessing.
-
-These design principles are consistent with best practices in industrial data engineering systems @deeng_principles.
-
-=== Constraints Imposed by Legacy Systems
-
-The methodological approach is strongly influenced by the constraints of Barid Al-Maghrib’s legacy information systems.
-
-The main constraints include:
-
-- Lack of a formal API for structured data access;
-- Reliance on HTML-based reporting interfaces;
-- Limited performance of long-range queries;
-- Absence of a centralized analytical data warehouse;
-- Fragmentation of data across multiple operational modules.
-
-These constraints make traditional data extraction methods (such as direct database queries or API consumption) infeasible.
-
-As a result, alternative approaches such as Robotic Process Automation (RPA) and browser automation are required to access and reconstruct historical datasets.
-
-This situation is common in legacy logistics and public-sector information systems, where operational continuity is prioritized over analytical accessibility @oecd_digital.
-
-Consequently, the methodological framework is explicitly designed to operate under partial observability and imperfect data conditions, ensuring that forecasting remains feasible despite system limitations.
+Finally, the pipeline includes a reconciliation step ensuring coherence across hierarchical levels, followed by evaluation and visualization. The presence of the visualization layer highlights that the system is not limited to offline modeling but also supports interactive analysis through an Altair-based interface, which is used for exploratory validation and operational interpretation of results.

@@ -1,97 +1,49 @@
-Barid Al-Maghrib (BAM) is the national postal operator in Morocco. It is responsible for providing postal services across the entire territory, within the framework of universal service obligations defined by Moroccan legislation. Over time, the institution has expanded beyond its traditional postal role to include logistics, financial, and digital services.
+Barid Al-Maghrib (BAM) is Morocco's designated postal operator and is responsible for ensuring the provision of universal postal services throughout the national territory. In addition to its traditional postal activities, the institution has progressively diversified its operations to include logistics, financial, and digital services. BAM currently operates as a state-owned company while remaining entrusted with public service missions defined by Moroccan postal legislation @law2496 @law0708.
 
 === Historical Background
 
-Postal services in Morocco date back to the end of the nineteenth century. A first structured postal organization was established by royal decree in 1892, which marked the beginning of a more formal communication system in the country @bam_history @wiki_bam.
+The origins of postal services in Morocco date back to the late nineteenth century. A structured postal organization was established in 1892, laying the foundations for a national communication network @bam_history.
 
-During the Protectorate period, postal, telegraph, and telephone services were reorganized according to European administrative models. In 1912, the Administration Chérifienne des Postes, des Télégraphes et des Téléphones was created to manage postal and telecommunications activities at the national level. That same year, the first Moroccan postage stamp was issued, illustrating the institutional consolidation of postal services @bam_history.
+During the Protectorate period, postal, telegraph, and telephone services were reorganized and integrated into the Administration Chérifienne des Postes, des Télégraphes et des Téléphones, created in 1912. Following Moroccan independence in 1956, these services were placed under ministerial supervision, and efforts were undertaken to extend postal coverage throughout the country.
 
-After independence in 1956, postal and telecommunications services were placed under the supervision of the Ministry of Posts, Telegraphs and Telephones. During this period, efforts were made to extend postal coverage to rural areas and strengthen national infrastructure.
+In 1984, the Office National des Postes et des Télécommunications (ONPT) was established to consolidate postal and telecommunications activities within a single public institution @bam_history. The communications sector was later reformed through Law 24-96, which separated postal and telecommunications activities and created Barid Al-Maghrib as an autonomous public institution endowed with legal personality and financial independence @law2496.
 
-In 1984, the Office National des Postes et des Télécommunications (ONPT) was created, bringing postal and telecommunications activities together within a single public entity @onpt.
-
-A major reform followed the promulgation of Law 24-96, which reorganized the communications sector in Morocco. This law separated postal and telecommunications activities and established Barid Al-Maghrib as an autonomous public institution with legal and financial independence @law2496.
-
-In 2010, Barid Al-Maghrib was transformed into a state-owned limited company (société anonyme), which reinforced its managerial autonomy while maintaining full public ownership. This transformation was also accompanied by the consolidation of financial activities under Al Barid Bank @wiki_bam.
+A subsequent reform transformed BAM into a state-owned limited company in 2010, reinforcing its managerial autonomy while preserving public ownership. This reform was accompanied by the consolidation of financial activities under Al Barid Bank (ABB) @law0708.
 
 === Missions of Barid Al-Maghrib
 
-Barid Al-Maghrib is responsible for ensuring universal postal service coverage throughout Morocco. Its missions, as defined by Law 24-96, include the collection, sorting, transportation, and distribution of postal items at the national and international levels @law2496.
+As the national postal operator, BAM is responsible for ensuring universal postal service coverage and maintaining the infrastructure necessary for the collection, sorting, transportation, and distribution of postal items within Morocco and abroad. Its activities encompass ordinary and registered mail, express services, parcel logistics, financial services, and digital solutions intended to support citizens, businesses, and public administrations @law2496.
 
-More specifically, BAM is responsible for:
-
-- Providing universal postal services across all regions;
-- Managing domestic and international mail and parcel flows;
-- Operating express mail and logistics services;
-- Contributing to financial inclusion through postal financial services;
-- Supporting e-government and digital transformation initiatives;
-- Ensuring compliance with international postal agreements.
-
-These responsibilities place BAM at the intersection of public service obligations and competitive logistics markets, which requires a balance between accessibility, affordability, and operational efficiency.
-
-=== Organizational Structure
-
-Barid Al-Maghrib is organized as a hierarchical institution governed by a Board of Directors responsible for defining strategic orientations and approving major investment and development plans.
-
-Operational management is ensured by executive directorates covering the main functions of the institution, including:
-
-- Postal operations and logistics;
-- Information systems and digital transformation;
-- Finance and accounting;
-- Human resources management;
-- Commercial and customer services.
-
-The operational network is distributed across regional directorates, sorting centers, and post offices, which ensures nationwide coverage. This decentralized structure allows BAM to remain close to users while coordinating large-scale logistics activities.
-
-The governance framework of BAM is defined by Law 24-96 and by the regulatory texts governing public enterprises in Morocco @law2496.
+BAM also represents Morocco within international postal organizations and ensures compliance with the technical and operational standards governing international postal exchanges.
 
 === Postal Activities
 
-Historically, postal services constituted the core activity of Barid Al-Maghrib. While traditional letter mail has declined because of digital communication, parcel and logistics activities have grown significantly, mainly due to the development of e-commerce.
+Although traditional letter mail remains part of BAM's historical mission, parcel and logistics services have become increasingly important due to the rapid growth of e-commerce and cross-border trade.
 
-The main postal products include:
+Among these activities, international shipments constitute a strategic segment because they involve coordination between postal agencies, sorting centers, transportation providers, customs administrations, and foreign postal operators. Efficient management of these flows requires accurate monitoring tools as well as mechanisms capable of anticipating variations in shipment volumes.
 
-- Ordinary mail and printed matter;
-- Registered mail with tracking capabilities;
-- Express Mail Service (EMS);
-- Domestic and international parcels;
-- Post office boxes and address-related services.
-
-International parcel flows have become a strategic activity because of increasing trade exchanges and shipments linked to the Moroccan diaspora. These services require coordination between operational, customs, and transportation systems.
+Since the objective of this internship was to analyze and forecast outgoing international mail volumes, particular attention was devoted to this activity, which is discussed in the following section.
 
 === Subsidiaries and Group Structure
 
-Barid Al-Maghrib has gradually developed a group structure in order to diversify its activities and adapt to market changes.
+BAM has progressively adopted a group structure aimed at diversifying its activities and adapting to changes in the postal and financial sectors.
 
-The most important subsidiary is Al Barid Bank, created in 2010 to consolidate postal financial services and promote financial inclusion in Morocco. Based on BAM's territorial network, Al Barid Bank offers banking services to individuals and small businesses throughout the country @wiki_bam.
+Its principal subsidiary is Al Barid Bank (ABB), established in 2010 to consolidate postal financial services and promote financial inclusion. Leveraging BAM's nationwide network, ABB provides banking services to individuals and small businesses throughout Morocco @abb.
 
-Other affiliated entities operate in logistics, express delivery, and media services. They contribute to diversifying the group’s revenue sources and strengthening its position in competitive markets.
+Other affiliated entities contribute to logistics, express delivery, and media-related activities, enabling the group to diversify its sources of revenue and strengthen its market position.
 
 === International Cooperation
 
-Barid Al-Maghrib is a member of the Universal Postal Union (UPU), a specialized agency of the United Nations responsible for coordinating international postal exchanges and establishing global postal standards @upu.
+Barid Al-Maghrib is a member of the Universal Postal Union (UPU), the specialized agency of the United Nations responsible for coordinating international postal exchanges and defining common operational standards @upu.
 
-Through this membership, Morocco is integrated into an international postal network that makes it possible to exchange mail with more than 180 countries. The UPU framework defines the main operational rules governing:
+Through this membership, Morocco participates in a global postal network connecting more than 180 countries. The standards established by the UPU govern shipment preparation, customs procedures, electronic data exchange, tracking interoperability, and compensation mechanisms between designated postal operators @upu_manual.
 
-- International dispatch preparation;
-- Customs documentation;
-- Tracking and electronic data exchange;
-- Compensation between postal operators.
+Compliance with these standards ensures the interoperability of Moroccan postal services with foreign networks and contributes to improving the reliability of international mail operations.
 
-Compliance with these standards ensures interoperability between postal systems and improves the reliability of cross-border postal flows.
+=== Current Challenges
 
-=== Challenges and Strategic Orientation
+Like many postal operators worldwide, BAM faces declining volumes of traditional correspondence while simultaneously managing growing parcel traffic and increasing customer expectations regarding shipment traceability.
 
-Like many postal operators worldwide, Barid Al-Maghrib faces structural challenges linked to the decline of traditional mail volumes and the rapid growth of parcel logistics driven by e-commerce.
+At the same time, operational information systems have historically been designed to support day-to-day processing activities rather than analytical applications. Consequently, despite the availability of large volumes of historical data, anticipating future shipment volumes remains challenging.
 
-The main challenges include:
-
-- Increasing variability in international shipment volumes;
-- Modernization of legacy information systems;
-- Optimization of transportation and sorting capacities;
-- Improvement of shipment traceability and data quality;
-- Integration of data-driven decision-making tools.
-
-To address these challenges, BAM has engaged in a strategic transformation centered on digitalization, operational efficiency, and service diversification. In this context, the use of data and predictive analytics has become increasingly important for planning and decision-making.
-
-Within this framework, the present internship contributes to the broader objective of improving operational visibility through the analysis and forecasting of Morocco's outgoing international mail flows.
+This context motivated the work carried out during the internship, which focused on transforming operational postal data into datasets suitable for analysis and evaluating forecasting methods capable of supporting planning activities.

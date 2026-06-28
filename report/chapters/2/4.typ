@@ -1,171 +1,167 @@
-#import "@preview/fletcher:0.5.8" as fletcher: diagram, edge, node, shapes
+#import "@preview/mmdr:0.2.2": mermaid
 
 
-The data engineering pipeline constitutes the transformation layer between raw extracted operational data and structured datasets used for analytical modeling. In the context of this internship, the pipeline is responsible for integrating heterogeneous sources, cleaning inconsistent records, and producing time-consistent datasets suitable for forecasting.
+The operational data extracted from Barid Al-Maghrib's information systems cannot be directly used for forecasting purposes. The available records correspond to individual shipment transactions and are primarily intended to support operational processes such as acceptance, routing, and tracking. Consequently, several preprocessing steps were necessary to obtain coherent time series adapted to the forecasting task.
 
-Given the complexity and fragmentation of the source systems (SMI, tracking interfaces, and reporting modules), a robust Extract–Transform–Load (ETL) architecture was implemented to ensure data reliability, scalability, and reproducibility.
-
-=== 2.4.1 ETL Architecture Overview
-
-The ETL pipeline is composed of three main stages:
-
-- Extract: retrieval of raw data from web interfaces and exported files;
-- Transform: cleaning, normalization, and feature engineering;
-- Load: storage into optimized analytical formats.
-
-This structure ensures a clear separation between raw data acquisition and analytical processing, improving maintainability and traceability @kimball_dw.
-
-=== 2.4.2 Extract Phase
-
-The extraction phase has been detailed in previous sections (SMI, tracking, and reporting systems). In summary, it includes:
-
-- Web automation via Playwright;
-- Chunked temporal extraction (daily or weekly windows);
-- HTML parsing of tracking events;
-- Export of structured reports from SMI interfaces.
-
-All extracted data is stored in raw form to ensure traceability and reproducibility.
-
-The guiding principle of this phase is to preserve the original structure of the data as much as possible before transformation.
-
-=== 2.4.3 Transform Phase
-
-The transformation phase is the most critical component of the pipeline. It involves converting raw, heterogeneous, and often inconsistent data into structured analytical datasets.
-
-==== Data Cleaning
-
-The following cleaning operations were applied:
-
-- Removal of duplicate records using unique identifiers (e.g., `codeenvoi_`, `cab`);
-- Filtering of invalid or corrupted status values;
-- Standardization of categorical variables (status codes, service types);
-- Handling of missing values in numerical attributes;
-- Filtering of inconsistent historical records.
-
-==== Schema Standardization
-
-Due to differences between systems, a unified schema was defined. This includes:
-
-- Standardized date formats (ISO 8601);
-- Consistent naming conventions for variables;
-- Harmonized identifiers across systems;
-- Unified representation of shipment status codes.
-
-==== Feature Engineering
-
-Additional variables were constructed to support time series analysis:
-
-- Weekly aggregation of parcel counts;
-- Total shipped weight per time unit;
-- Average parcel weight;
-- Seasonal indicators (e.g., Ramadan period flags);
-- Log-transformed variables for variance stabilization.
-
-These transformations improve the suitability of the dataset for statistical modeling and forecasting methods.
-
-==== Temporal Aggregation
-
-Since forecasting is performed at a weekly level, raw transactional data was aggregated using:
-
-- Grouping by week of deposit;
-- Summation of counts and weights;
-- Computation of summary statistics.
-
-This step ensures consistency between operational granularity and forecasting resolution.
-
-=== 2.4.4 Load Phase
-
-The final stage of the pipeline consists of storing transformed datasets into efficient analytical formats.
-
-The chosen format is Apache Parquet due to its advantages:
-
-- Columnar storage optimized for analytical queries;
-- High compression ratios;
-- Efficient I/O performance;
-- Compatibility with Python data science ecosystem.
-
-Storing intermediate and final datasets in Parquet format ensures:
-
-- Fast loading during model training;
-- Reduced storage footprint;
-- Long-term reproducibility of results.
-
-=== 2.4.5 Pipeline Automation and Orchestration
-
-The ETL pipeline is fully automated using Python scripts orchestrating sequential tasks:
-
-- Scheduled execution of extraction modules;
-- Batch processing of transformation steps;
-- Automatic validation of outputs;
-- Logging of pipeline execution stages.
-
-A modular design is used to ensure that each component can be executed independently or as part of a full pipeline run.
-
-=== 2.4.6 Data Validation and Quality Control
-
-To ensure data integrity, several validation rules were implemented:
-
-- Referential integrity checks across datasets;
-- Range validation for numerical variables (e.g., weight > 0);
-- Consistency checks between tracking and deposit data;
-- Detection of missing temporal periods;
-- Outlier detection using statistical thresholds.
-
-Records failing validation are either corrected when possible or excluded from the final dataset.
-
-=== 2.4.7 Storage Optimization
-
-Given the large volume of data (millions of operational records), storage optimization techniques were applied:
-
-- Columnar compression using Parquet;
-- Removal of redundant raw HTML after parsing;
-- Deduplication of intermediate datasets;
-- Partitioning by year and dataset type.
-
-These optimizations significantly reduce storage requirements while maintaining analytical fidelity.
-
-=== 2.4.8 ETL Pipeline Architecture
-
-The overall ETL architecture is illustrated below.
+The preparation process implemented during this internship is summarized in @fig-data-preparation-pipeline.
 
 #figure(
-  diagram(
-    node-stroke: 1pt,
+  placement: auto,
+  mermaid(
+    "
+flowchart TB
 
-    node((0, 4), name: <extract>)[Extract Layer],
-    node((2, 4), name: <raw>)[Raw Data Storage],
+A[Operational Sources]
 
-    edge(<extract>, <raw>),
+B[Extraction and ETL]
 
-    node((2, 3), name: <transform>)[Transform Layer (Cleaning + Feature Engineering)],
-    edge(<raw>, <transform>),
+C[Deduplication]
 
-    node((2, 2), name: <validate>)[Validation & Quality Control],
-    edge(<transform>, <validate>),
+D[Temporal Filtering]
 
-    node((2, 1), name: <load>)[Load Layer (Parquet Storage)],
-    edge(<validate>, <load>),
+E[Weekly Aggregation]
 
-    node((2, 0), name: <analytics>)[Forecasting & Analysis],
-    edge(<load>, <analytics>),
+F[Hierarchy Construction]
+
+G[Feature Engineering]
+
+H[Transformations]
+
+I[Prepared Forecasting Datasets]
+
+
+A --> B
+B --> C
+C --> D
+D --> E
+E --> F
+F --> G
+G --> H
+H --> I
+
+",
   ),
-  caption: [End-to-end ETL pipeline for postal data processing]
-)
+  caption: [
+    Data preparation pipeline implemented for international mail forecasting.
+  ],
+)<fig-data-preparation-pipeline>
 
-=== 2.4.9 Challenges in Data Engineering
+@fig-data-preparation-pipeline presents the preprocessing workflow adopted during the internship. Data extracted from operational systems first underwent cleaning, deduplication, and temporal filtering procedures to remove inconsistent observations and retain periods with sufficient historical coverage. Shipment-level records were then aggregated into weekly series, organized according to the hierarchical structures considered in this study, enriched with explanatory features, and transformed into representations compatible with statistical, machine learning, and neural forecasting models.
 
-Several challenges were encountered during ETL implementation:
+=== Weekly Aggregation
 
-- Heterogeneity of source systems;
-- Inconsistent historical records across platforms;
-- Large-scale data volume (millions of records);
-- Performance limitations during transformation;
-- Dependence on previously extracted raw data integrity.
+The original data is available at the shipment level, where each observation corresponds to a deposited international item. Since the objective of the internship is to forecast aggregated mail flows, the transactional data was resampled into weekly periods.
 
-These challenges required iterative refinement of both extraction and transformation logic.
+The choice of a weekly aggregation level was motivated by several considerations. First, weekly aggregation reduces the noise associated with day-to-day operational variability. Second, it better aligns with medium-term planning activities such as transport scheduling and capacity allocation. Finally, it allows the capture of annual seasonal effects while maintaining a sufficiently large number of observations for model estimation.
 
-=== 2.4.10 Summary
+For each week, several aggregated indicators were computed, including:
 
-The ETL pipeline provides a structured framework for transforming raw operational data into clean, consistent, and analysis-ready datasets. By combining automated extraction, robust transformation logic, and optimized storage formats, the system ensures that downstream forecasting models operate on high-quality data.
+- Total shipped weight;
+- Number of shipments;
+- Mean shipment weight;
+- Standard deviation of shipment weight.
 
-This pipeline represents the core data engineering contribution of this internship project.
+The total shipped weight was selected as the primary forecasting target, while the remaining indicators were retained for exploratory analyses and potential future extensions.
+
+
+=== Hierarchical Structure Construction <section_methodology_hierarchical>
+
+One characteristic of international mail flows is their natural hierarchical organization. The same observations can be analyzed at different levels of aggregation, ranging from a national overview to detailed flows associated with specific deposit centers and destination countries.
+
+In this study, a two-dimensional hierarchy was defined using:
+
+- Deposit center (*Centre_Agence_depot*);
+- Destination country (*Destination*).
+
+An additional aggregation level corresponding to the national total was introduced to represent the root node of the hierarchy.
+
+The hierarchy considered in this work is illustrated in @fig-hierarchy-structure.
+
+#figure(
+  mermaid(
+    "graph TD
+
+A[Total]
+
+A --> B1[Agency 1]
+A --> B2[Agency 2]
+A --> B3[Agency N]
+
+B1 --> C1[France]
+B1 --> C2[Belgium]
+B1 --> C3[Other]
+
+B2 --> C4[France]
+B2 --> C5[Spain]
+
+B3 --> C6[USA]",
+  ),
+  caption: [Hierarchical organization adopted for international mail forecasting.],
+) <fig-hierarchy-structure>
+
+@fig-hierarchy-structure presents the aggregation structure retained for forecasting. Forecasts are initially generated at the root level and subsequently reconciled to ensure consistency across all hierarchy levels. This organization enables both global analyses and detailed investigations of specific origin-destination combinations.
+
+The hierarchy was constructed using the aggregation utilities provided by the HierarchicalForecast library @hierarchicalforecast. This process produces three essential objects:
+
+- A dataset containing observations for all hierarchy levels;
+- A summation matrix describing aggregation relationships;
+- Metadata identifying each hierarchical level.
+
+These structures are later used during the reconciliation stage described in @section_methodology_operationalization.
+
+
+=== Feature Engineering <section_methodology_feature_engineering>
+Feature engineering plays a central role for machine learning and deep learning forecasting models. Unlike traditional statistical methods, these approaches generally require explicit explanatory variables to capture temporal dependencies.
+
+Two categories of features were considered in this study: shared features used by multiple model families and model-specific features.
+
+==== Shared Features
+A deterministic trend component was generated using utilities from the UtilsForecast package @utilsforecast. This variable was incorporated into both machine learning and neural forecasting models.
+
+The trend feature allows models to account for gradual changes in international mail demand that may not be fully captured through lagged observations alone.
+
+==== Features for Machine Learning Models
+Machine learning models were trained using lag-based supervised learning representations.
+
+The following lag variables were considered:
+
+- Lag 1;
+- Lag 2;
+- Lag 3;
+- Lag 4;
+- Seasonal lag corresponding to an approximate Hijri year.
+
+The inclusion of a seasonal lag was motivated by preliminary analyses suggesting that international mail flows exhibit recurring patterns associated with religious events and seasonal demand cycles.
+
+==== Features for Machine Learning Models
+
+Machine learning models were trained using lag-based supervised learning representations.
+
+The following lag variables were considered:
+
+- Lag 1;
+- Lag 2;
+- Lag 3;
+- Lag 4;
+- Seasonal lag corresponding to an approximate Hijri year.
+
+The inclusion of a seasonal lag was motivated by preliminary analyses suggesting that international mail flows exhibit recurring patterns associated with religious events and seasonal demand cycles.
+
+
+=== Transformations
+
+Several forecasting models benefit from target transformations that stabilize variance and reduce the influence of extreme observations.
+
+In this internship, a logarithmic transformation based on the function $\ln(1+x)$ was applied to the target variable before model fitting.
+
+The transformed variable is defined as:
+
+$
+  y'_t = \ln(1+y_t)
+$
+
+where $y_t$ denotes the observed mail flow at time $t$.
+
+Predictions produced in the transformed space were subsequently mapped back to the original scale using the inverse transformation.
+
+This approach improves numerical stability and mitigates the effect of exceptionally large shipment volumes observed during peak periods.

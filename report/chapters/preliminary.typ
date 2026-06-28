@@ -22,49 +22,85 @@
 
 
 #let abstract-en = [
-  This report presents the work carried out during an internship at Barid Al-Maghrib as part of the requirements for the completion of the academic year.
+  Barid Al-Maghrib manages large volumes of international postal shipments through operational information systems primarily designed for transaction processing and shipment tracking. While these systems provide detailed operational visibility, they offer limited support for predictive analytics and demand forecasting.
 
-  The objective of this internship was to study and forecast Morocco's outgoing international mail flows in order to better understand their evolution and provide estimates that can support operational planning activities.
+  This internship addresses the problem of forecasting outgoing international mail flows in order to improve short-term operational planning. The work involved reconstructing historical time series from heterogeneous operational sources, developing a robust data preparation pipeline, and evaluating multiple forecasting approaches.
 
-  The work started with the collection of data from the Système de Messagerie Intégré (SMI) and shipment tracking services. Since the available systems do not provide programming interfaces and some reports could not be exported over long periods, an automated collection process was developed to extract and archive the required information. The collected data were then cleaned, transformed, and consolidated into datasets suitable for analysis.
+  The proposed methodology follows an adaptation of the CRISP-DM framework and encompasses data extraction, preprocessing, feature engineering, model development, evaluation, and operationalization stages. Candidate forecasting models include statistical methods, machine learning algorithms, and deep learning architectures. Model performance was assessed using a rolling-origin cross-validation strategy and several complementary metrics.
 
-  Several time series forecasting methods were evaluated, including ETS, ARIMA, CES, TBATS, Theta, MFLES, and Seasonal Naive models. Their performance was assessed using a rolling cross-validation procedure and compared using forecasting accuracy measures. Prediction intervals were also generated to quantify uncertainty.
+  Experimental results indicate that neural approaches, particularly BiTCN, achieve the best forecasting performances for the four-week planning horizon considered in this study. However, statistical models exhibit greater stability for longer forecasting horizons. To ensure coherence across aggregation levels, forecasts were reconciled using hierarchical forecasting techniques.
 
-  In addition, a simple web interface was developed to visualize historical trends, forecasts, and selected indicators in an interactive manner.
+  Finally, an interactive visualization system based on Altair was developed to enable users to explore historical observations and reconciled forecasts dynamically. The resulting framework constitutes a complete forecasting workflow capable of transforming operational postal data into actionable decision-support information and contributes to ongoing digital transformation initiatives within Barid Al-Maghrib.
 
-  The results obtained show that statistical forecasting techniques can provide useful information for anticipating fluctuations in international postal traffic and may contribute to improving planning and resource management activities within Barid Al-Maghrib.
-
-  Keywords: Time series forecasting, international mail, postal logistics, data engineering, web automation, decision support.
+  *Keywords:* time series forecasting, hierarchical forecasting, postal logistics, CRISP-DM, BiTCN, NHITS, data engineering, Altair, Barid Al-Maghrib.
 ]
 
 
 #let abstract-fr = [
-  Ce rapport présente les travaux réalisés dans le cadre d'un stage effectué au sein de Barid Al-Maghrib durant l'année universitaire 2025-2026.
+  Barid Al-Maghrib gère d'importants volumes d'envois postaux internationaux à travers des systèmes d'information principalement conçus pour le traitement transactionnel et le suivi des expéditions. Bien que ces systèmes offrent une visibilité opérationnelle détaillée, ils présentent des capacités limitées en matière d'analyse prédictive et de prévision de la demande.
 
-  L'objectif principal de ce stage était d'étudier et de prévoir l'évolution des flux de courrier international sortant du Maroc afin de disposer d'estimations pouvant contribuer à la planification des activités opérationnelles et à une meilleure gestion des ressources.
+  Ce stage s'intéresse à la problématique de la prévision des flux de courrier international sortant afin d'améliorer la planification opérationnelle à court terme. Les travaux réalisés ont consisté à reconstruire des séries temporelles historiques à partir de sources opérationnelles hétérogènes, à développer une chaîne robuste de préparation des données et à évaluer plusieurs approches de prévision.
 
-  La première étape du travail a consisté à collecter les données nécessaires à partir du Système de Messagerie Intégré (SMI) et des services de suivi des envois. L'absence d'interfaces de programmation ainsi que certaines limitations des outils de reporting existants ont nécessité le développement d'un processus automatisé permettant d'extraire, d'archiver et de consolider les données disponibles. Ces données ont ensuite été nettoyées, transformées et organisées sous une forme adaptée à l'analyse.
+  La méthodologie proposée s'appuie sur une adaptation de la démarche CRISP-DM et couvre les étapes d'extraction des données, de prétraitement, d'ingénierie des variables, de développement des modèles, d'évaluation et d'opérationnalisation. Les modèles étudiés comprennent des approches statistiques, des algorithmes d'apprentissage automatique et des architectures d'apprentissage profond. Les performances ont été évaluées à l'aide d'une validation croisée glissante et de plusieurs métriques complémentaires.
 
-  Plusieurs méthodes de prévision de séries temporelles ont été étudiées et comparées, notamment les modèles ETS, ARIMA, CES, TBATS, Theta, MFLES ainsi que le modèle Seasonal Naive utilisé comme référence. L'évaluation des performances a été réalisée à l'aide d'une procédure de validation croisée adaptée aux séries temporelles et de mesures d'erreur permettant de comparer les différentes approches. Des intervalles de prédiction ont également été construits afin de tenir compte de l'incertitude associée aux prévisions.
+  Les résultats expérimentaux montrent que les approches neuronales, notamment BiTCN, obtiennent les meilleures performances pour l'horizon de prévision de quatre semaines retenu dans cette étude. Toutefois, les modèles statistiques présentent une meilleure stabilité pour des horizons de prévision plus étendus. Afin de garantir la cohérence des prévisions entre les différents niveaux d'agrégation, une étape de réconciliation hiérarchique a été mise en œuvre.
 
-  Enfin, une interface web simple a été développée afin de faciliter la visualisation des données historiques, des prévisions produites ainsi que de quelques indicateurs utiles au suivi de l'activité.
+  Enfin, un système de visualisation interactif basé sur Altair a été développé afin de permettre l'exploration dynamique des observations historiques et des prévisions réconciliées. La solution proposée constitue ainsi une chaîne complète de prévision capable de transformer des données postales opérationnelles en informations exploitables pour l'aide à la décision, tout en s'inscrivant dans les initiatives de transformation numérique engagées par Barid Al-Maghrib.
 
-  Les résultats obtenus montrent que les méthodes de prévision statistique peuvent constituer un outil intéressant pour anticiper les variations du trafic postal international et fournir des éléments d'aide à la planification des activités au sein de Barid Al-Maghrib.
-
-  Mots-clés : prévision de séries temporelles, courrier international, logistique postale, ingénierie des données, automatisation web, aide à la décision.
+  *Mots-clés :* prévision de séries temporelles, prévision hiérarchique, logistique postale, CRISP-DM, BiTCN, NHITS, ingénierie des données, Altair, Barid Al-Maghrib.
 ]
 
+
+#let abbreviations-list = (
+  ("BAM", "Barid Al-Maghrib"),
+  ("ABB", "Al Barid Bank"),
+
+  ("SMI", "Système de Messagerie Intégré"),
+
+  ("CRISP-DM", "Cross-Industry Standard Process for Data Mining"),
+
+  ("RPA", "Robotic Process Automation"),
+  ("ETL", "Extract, Transform, Load"),
+  ("API", "Application Programming Interface"),
+  ("OLTP", "Online Transaction Processing"),
+
+  ("UPU", "Universal Postal Union"),
+
+  ("PoD", "Pay on Delivery"),
+  ("CRBT", "Contre-Remboursement"),
+  ("CEC", "Client en Compte"),
+  ("CCP", "Compte Courant Postal"),
+  ("CCABB", "Compte Courant Al Barid Bank"),
+  ("BC", "Barid Cash"),
+
+  ("MEI", "Mise en Instance"),
+  ("MED", "Mise en Distribution"),
+
+  ("ARIMA", "AutoRegressive Integrated Moving Average"),
+  ("ETS", "Error, Trend, Seasonal"),
+  ("CES", "Complex Exponential Smoothing"),
+  ("TBATS", "Trigonometric, Box-Cox transformation, ARMA errors, Trend, and Seasonal components"),
+  ("MFLES", "Multiple Frequency Linear Exponential Smoothing"),
+
+  ("BiTCN", "Bidirectional Temporal Convolutional Network"),
+  ("NHITS", "Neural Hierarchical Interpolation for Time Series Forecasting"),
+
+  ("MASE", "Mean Absolute Scaled Error"),
+  ("RMAE", "Relative Mean Absolute Error"),
+  ("ND", "Normalized Deviation"),
+  ("SPIS", "Scaled Pinball Interval Score"),
+
+  ("MinT", "Minimum Trace Reconciliation"),
+)
+
+
 #let abbreviations = [
-  - BAM: Barid Al Maghrib
-  - ABB: Al Barid Bank
-  - SMI: Système de Messagerie Intégré
-  - PR: Poste Restante
-  - PoD: Pay on Delivery
-  - CRBT: Contre-Remboursement
-  - CEC: Client On Compte
-  - CCP / CCABB: Compte Courant Poste /  Compte Courant Al Barid Bank
-  - MEI: Mise On Instance
-  - MED: Mise En Distribution
-  - BC: Barid Cash
-  - PP: Petits Paquets
+  #grid(
+    columns: (8em, 1fr),
+    gutter: 0.65em,
+
+    [*Abbreviation*], [*Definition*],
+
+    ..abbreviations-list.sorted(key: item => item.at(0).at(0)).map(x => ([#x.at(0)], [#x.at(1)])).flatten(),
+  )
 ]
