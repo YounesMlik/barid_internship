@@ -7,7 +7,7 @@ This repository contains the implementation developed during my engineering inte
 ---
 
 ## Project Report
-The project report can be found at https://github.com/YounesMlik/barid_internship/main/report/report.pdf
+The project report can be found at [report/report.pdf](report/report.pdf)
 
 ---
 
