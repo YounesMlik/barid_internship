@@ -1,0 +1,13 @@
+The results obtained during this internship demonstrate the feasibility of building a forecasting pipeline for outgoing international mail flows despite the limitations imposed by the operational information systems available at Barid Al-Maghrib.
+
+From a data engineering perspective, a significant part of the effort was devoted to reconstructing an analytical dataset from heterogeneous operational sources. The absence of dedicated APIs, the fragmentation of historical information, and the constraints associated with legacy systems considerably increased the complexity of the data acquisition process. The implementation of automated extraction procedures and intermediate storage mechanisms nevertheless made it possible to obtain a consistent historical dataset suitable for time-series analysis.
+
+The evaluation results indicate that neural forecasting models, and particularly BiTCN, constitute highly effective approaches for short-term forecasting in the considered context. Their ability to exploit local temporal dependencies enabled substantial improvements over traditional statistical baselines and machine learning methods.
+
+However, the experiments also revealed several limitations. First, neural architectures exhibited reduced stability when forecasts were generated over long horizons. While these models achieved excellent performances for the four-week planning horizon adopted in this study, their predictive behavior became progressively less reliable as the forecasting horizon increased.
+
+Second, the forecasting models considered in this work were developed exclusively from historical shipment observations and derived temporal features. Exogenous variables potentially influencing international mail volumes, such as public holidays, religious events, macroeconomic indicators, or major disruptions in international logistics networks, were not incorporated into the modeling process.
+
+Finally, although the hierarchical reconciliation procedure guarantees coherence between aggregation levels, the adopted Top-Down approach remains relatively simple compared to more sophisticated reconciliation methods available in the literature, such as MinT-based techniques. Additional experiments could therefore be conducted to evaluate the impact of alternative reconciliation strategies.
+
+Despite these limitations, the proposed methodology provides a practical framework for transforming operational postal data into actionable forecasting outputs. It demonstrates how recent forecasting libraries, modern data engineering practices, and interactive visualization tools can be combined to support decision-making activities in environments where analytical infrastructures remain limited.

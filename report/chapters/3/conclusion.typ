@@ -1,0 +1,5 @@
+This chapter presented the implementation and evaluation of the forecasting system developed during the internship.
+
+The chapter described the main components of the proposed solution, including the data engineering pipeline, feature generation procedures, forecasting models, hierarchical reconciliation mechanisms, and interactive visualization layer. The experimental evaluation highlighted the superior short-term performances of neural approaches, particularly BiTCN, while also emphasizing the importance of considering forecasting horizons when selecting operational models.
+
+The resulting system provides a complete workflow capable of extracting, processing, forecasting, reconciling, and visualizing international mail flows. Although developed within the scope of an internship, the proposed approach constitutes a first step toward the integration of predictive analytics capabilities into operational postal environments.

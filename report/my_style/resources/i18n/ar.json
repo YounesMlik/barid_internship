@@ -1,0 +1,21 @@
+{
+  "mentor": "المشرف",
+  "mentor_plural": "المشرفون",
+  "jury": "لجنة المناقشة",
+  "author": "المؤلف",
+  "author_plural": "المؤلفون",
+  "academic_year": "السنة الجامعية",
+
+  "figures_table": "قائمة الأشكال",
+  "tables_table": "قائمة الجداول",
+
+  "chapter": "الفصل",
+  "section": "القسم",
+  "defended_on_pre_date": "نوقشت بتاريخ",
+  "defended_on_post_date": "أمام لجنة المناقشة المكونة من",
+
+  "dedication": "إهداء",
+  "acknowledgments": "شكر وتقدير",
+  "abstract": "ملخص",
+  "abbreviations": "قائمة الاختصارات"
+}
