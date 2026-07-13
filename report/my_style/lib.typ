@@ -1,7 +1,7 @@
 #import "@preview/headcount:0.1.1": *
 
 #let IMAGE_BOX_MAX_WIDTH = 120pt
-#let IMAGE_BOX_MAX_HEIGHT = 4cm
+#let IMAGE_BOX_MAX_HEIGHT = 60pt
 
 #let supported-langs = ("en", "fr", "ar")
 
@@ -21,112 +21,92 @@
   defense-date,
   dict,
 ) = {
-  grid(
-    gutter: 0em,
-    inset: -1.5cm,
-    align: center + horizon,
-    columns: (1fr, 4fr, 1fr),
-    box(height: IMAGE_BOX_MAX_HEIGHT, width: 1fr)[
+  block[
+    #box(height: IMAGE_BOX_MAX_HEIGHT, width: IMAGE_BOX_MAX_WIDTH)[
       #align(start + horizon)[
-        #school-logo
+        #if school-logo == none {
+          image("images/ENSIAS.svg")
+        } else {
+          school-logo
+        }
       ]
-    ],
-    align(center + horizon)[
-      #text(size: 18pt)[Université Sultan Moulay Slimane\
-        Ecole Supérieure de Technologie – FBS]
-    ],
-    box(height: IMAGE_BOX_MAX_HEIGHT, width: 1fr)[
+    ]
+    #h(1fr)
+    #box(height: IMAGE_BOX_MAX_HEIGHT, width: IMAGE_BOX_MAX_WIDTH)[
       #align(end + horizon)[
         #company-logo
       ]
-    ],
-  )
+    ]
+  ]
 
   // Title box
   align(center + horizon)[
     #if subtitle != none {
-      subtitle
-    }
-    #line(length: 100%, stroke: 3pt)
-    #text(size: 25pt, weight: "bold")[#title]
-    #line(length: 100%, stroke: 3pt)
-  ]
-
-  align(
-    center + horizon,
-    text(size: 15pt)[
-      Soutenu le 19/06/2026 devant la commission d’examen composée de :
-
-    ],
-  )
-  align(
-    center + horizon,
-    box(width: 1fr, height: 25%, stroke: 1pt, inset: 1em)[
-      #align(left + horizon)[
-        #text(size: 15pt)[
-          #grid(
-            row-gutter: 2em,
-            column-gutter: 2em,
-            columns: 2,
-            [Pr. Younes Regragui], [Président/Rapporteur],
-            [Pr. Khalid Qbouche], [Encadrant],
-          )
-          #h(2em)
+      text(size: 14pt, tracking: 2pt)[
+        #smallcaps[
+          #subtitle
         ]
       ]
+    }
+    #line(length: 100%, stroke: 0.5pt)
+    #text(size: 25pt, weight: "bold")[#title]
+    #line(length: 100%, stroke: 0.5pt)
+  ]
+
+  // Credits
+  box()
+  h(1fr)
+  grid(
+    columns: (auto, 1fr, auto),
+    [
+      // Authors
+      #if authors.len() > 0 {
+        [
+          #text(weight: "bold")[
+            #if authors.len() > 1 {
+              dict.author_plural
+            } else {
+              dict.author
+            }
+            #linebreak()
+          ]
+          #for author in authors {
+            [#author #linebreak()]
+          }
+        ]
+      }
+    ],
+    [
+      // Mentor
+      #if mentors != none and mentors.len() > 0 {
+        align(end)[
+          #text(weight: "bold")[
+            #if mentors.len() > 1 {
+              dict.mentor_plural
+            } else {
+              dict.mentor
+            }
+            #linebreak()
+          ]
+          #for mentor in mentors {
+            mentor
+            linebreak()
+          }
+        ]
+      }
+      // Jury
+      #if defense-date == none and jury != none and jury.len() > 0 {
+        align(end)[
+          *#dict.jury* #linebreak()
+          #for prof in jury {
+            [#prof #linebreak()]
+          }
+        ]
+      }
     ],
   )
-  // grid(
-  //   columns: (auto, 1fr, auto),
-  //   [
-  //     // Authors
-  //     #if authors.len() > 0 {
-  //       [
-  //         #text(weight: "bold")[
-  //           #if authors.len() > 1 {
-  //             dict.author_plural
-  //           } else {
-  //             dict.author
-  //           }
-  //           #linebreak()
-  //         ]
-  //         #for author in authors {
-  //           [#author #linebreak()]
-  //         }
-  //       ]
-  //     }
-  //   ],
-  //   [
-  //     // Mentor
-  //     #if mentors != none and mentors.len() > 0 {
-  //       align(end)[
-  //         #text(weight: "bold")[
-  //           #if mentors.len() > 1 {
-  //             dict.mentor_plural
-  //           } else {
-  //             dict.mentor
-  //           }
-  //           #linebreak()
-  //         ]
-  //         #for mentor in mentors {
-  //           mentor
-  //           linebreak()
-  //         }
-  //       ]
-  //     }
-  //     // Jury
-  //     #if defense-date == none and jury != none and jury.len() > 0 {
-  //       align(end)[
-  //         *#dict.jury* #linebreak()
-  //         #for prof in jury {
-  //           [#prof #linebreak()]
-  //         }
-  //       ]
-  //     }
-  //   ],
-  // )
 
-  align(right + bottom)[
+  align(center + bottom)[
     #if defense-date != none and jury != none and jury.len() > 0 {
       [*#dict.defended_on_pre_date #defense-date #dict.defended_on_post_date:*]
       // Jury
@@ -142,7 +122,7 @@
       linebreak()
     }
     #if academic-year != none {
-      [Année universitaire: #academic-year]
+      [#dict.academic_year: #academic-year]
     }
   ]
 }
@@ -244,7 +224,7 @@
 
   set figure.caption(separator: " - ")
   show figure.where(kind: image): set figure.caption(position: bottom)
-
+  
   show figure.where(kind: table): it => {
     set block(breakable: true)
     set figure.caption(position: top)
@@ -319,8 +299,10 @@
     dict,
   )
 
-  // pagebreak()
-  // pagebreak()
+  pagebreak()
+  pagebreak()
+
+  counter(page).update(1)
 
   set page(
     numbering: "i",
@@ -338,8 +320,6 @@
       ]
     },
   )
-
-  counter(page).update(1)
 
   // Dedication (i)
   if dedication != none {
